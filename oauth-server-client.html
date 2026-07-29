@@ -1,0 +1,3346 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Visual learning lesson</title>
+    <style>
+      :root {
+        --page: #f4f1e9;
+        --surface: #fffdf8;
+        --surface-2: #f8f4eb;
+        --ink: #17212b;
+        --muted: #66717d;
+        --line: #c9c2b5;
+        --line-strong: #7c858d;
+        --accent: #126a72;
+        --accent-strong: #084c53;
+        --accent-soft: #d9eff0;
+        --ownership: #275f9a;
+        --ownership-soft: #e0ebf7;
+        --state: #7050a0;
+        --state-soft: #ede5f7;
+        --decision: #8c560b;
+        --decision-soft: #fff0c9;
+        --danger: #a43e34;
+        --danger-soft: #fbe4df;
+        --success: #27714e;
+        --success-soft: #dff1e7;
+        --shadow: 0 18px 52px rgba(46, 51, 55, 0.1);
+        --radius: 20px;
+        --radius-small: 12px;
+        font-family:
+          Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --page: #10171d;
+          --surface: #172129;
+          --surface-2: #1d2932;
+          --ink: #edf2f4;
+          --muted: #aeb8bf;
+          --line: #3d4951;
+          --line-strong: #89969e;
+          --accent: #67ced3;
+          --accent-strong: #94e4e7;
+          --accent-soft: #173e42;
+          --ownership: #88bff2;
+          --ownership-soft: #213b55;
+          --state: #c0a0ef;
+          --state-soft: #382b4b;
+          --decision: #f2c168;
+          --decision-soft: #47391d;
+          --danger: #ff9c91;
+          --danger-soft: #4c2927;
+          --success: #7dd6a6;
+          --success-soft: #1f4432;
+          --shadow: 0 18px 52px rgba(0, 0, 0, 0.28);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        overflow-x: hidden;
+        background:
+          radial-gradient(circle at 10% -5%, var(--accent-soft), transparent 32rem),
+          var(--page);
+        color: var(--ink);
+      }
+
+      body,
+      button,
+      select {
+        font: inherit;
+      }
+
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      button:focus-visible,
+      a:focus-visible,
+      summary:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+
+      button {
+        color: inherit;
+      }
+
+      .page {
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 16px clamp(10px, 1vw, 18px) 40px;
+      }
+
+      .masthead {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(250px, 34rem);
+        gap: 28px;
+        align-items: end;
+        margin-bottom: 24px;
+      }
+
+      .eyebrow,
+      .micro-label {
+        color: var(--accent);
+        font-size: 0.73rem;
+        font-weight: 850;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+      }
+
+      h1 {
+        max-width: 18ch;
+        margin: 0;
+        font-size: clamp(2.25rem, 5.4vw, 5.3rem);
+        letter-spacing: -0.06em;
+        line-height: 0.92;
+      }
+
+      .problem {
+        max-width: 72ch;
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: clamp(1rem, 1.5vw, 1.22rem);
+        line-height: 1.55;
+      }
+
+      .objective-card {
+        border-left: 4px solid var(--accent);
+        border-radius: 0 var(--radius-small) var(--radius-small) 0;
+        background: color-mix(in srgb, var(--surface) 78%, transparent);
+        padding: 15px 18px;
+      }
+
+      .objective-card p {
+        margin: 6px 0 0;
+        line-height: 1.5;
+      }
+
+      .meta-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .chip,
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 760;
+        line-height: 1;
+        padding: 7px 10px;
+      }
+
+      .lesson-shell {
+        width: 100%;
+        min-height: calc(100svh - 210px);
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .lesson-toolbar {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--line);
+        padding: 14px 16px;
+      }
+
+      .scenario-tabs,
+      .view-tabs,
+      .step-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .scenario-tabs {
+        min-width: 0;
+        overflow-x: auto;
+        padding: 3px;
+        scrollbar-width: thin;
+      }
+
+      .tab,
+      .view-button,
+      .icon-button,
+      .primary-button,
+      .artifact-button {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: transparent;
+        cursor: pointer;
+        font-weight: 760;
+      }
+
+      .tab,
+      .view-button {
+        flex: 0 0 auto;
+        padding: 9px 13px;
+        color: var(--muted);
+        font-size: 0.83rem;
+      }
+
+      .tab:hover,
+      .view-button:hover,
+      .icon-button:hover,
+      .artifact-button:hover {
+        border-color: var(--accent);
+        color: var(--ink);
+      }
+
+      .tab[aria-selected="true"] {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: var(--surface);
+      }
+
+      .view-button[aria-pressed="true"] {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent-strong);
+      }
+
+      .learning-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.75fr) minmax(320px, 0.75fr);
+        min-height: max(590px, calc(100svh - 300px));
+      }
+
+      .canvas-column {
+        min-width: 0;
+        border-right: 1px solid var(--line);
+      }
+
+      .canvas-head {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+      }
+
+      .canvas-head p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .progress-text {
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-variant-numeric: tabular-nums;
+        font-weight: 760;
+        white-space: nowrap;
+      }
+
+      .map-scroll {
+        overflow-x: auto;
+        padding: 0 18px 18px;
+      }
+
+      .map-region {
+        position: relative;
+        min-width: 680px;
+        min-height: max(430px, calc(100svh - 470px));
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 17px;
+        background:
+          linear-gradient(var(--surface-2), var(--surface-2)) padding-box,
+          repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 39px,
+            color-mix(in srgb, var(--line) 35%, transparent) 40px
+          );
+        padding: 18px;
+      }
+
+      .boundary-grid {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: repeat(var(--boundary-count, 3), minmax(190px, 1fr));
+        gap: 14px;
+        min-height: 360px;
+      }
+
+      .boundary {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        border: 2px solid var(--line-strong);
+        border-radius: 15px;
+        background: color-mix(in srgb, var(--surface) 88%, transparent);
+        padding: 13px;
+      }
+
+      .boundary::before {
+        content: attr(data-boundary-type);
+        position: absolute;
+        top: -9px;
+        right: 9px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 0.63rem;
+        font-weight: 820;
+        letter-spacing: 0.08em;
+        padding: 3px 7px;
+        text-transform: uppercase;
+      }
+
+      .boundary-name {
+        margin: 3px 0 2px;
+        font-size: 0.9rem;
+      }
+
+      .boundary-owner {
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 0.71rem;
+        line-height: 1.35;
+      }
+
+      .actor-stack {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        gap: 16px;
+        justify-content: space-around;
+      }
+
+      .actor {
+        position: relative;
+        width: 100%;
+        min-height: 96px;
+        border: 2px solid var(--line);
+        border-radius: 13px;
+        background: var(--surface);
+        color: var(--ink);
+        cursor: pointer;
+        padding: 13px;
+        text-align: left;
+        transition:
+          border-color 160ms ease,
+          box-shadow 160ms ease,
+          transform 160ms ease;
+      }
+
+      .actor:hover {
+        border-color: var(--accent);
+      }
+
+      .actor.is-active {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px var(--accent-soft);
+        transform: translateY(-2px);
+      }
+
+      .actor.is-sender::after,
+      .actor.is-receiver::after,
+      .actor.is-owner::after {
+        position: absolute;
+        top: -10px;
+        left: 10px;
+        border-radius: 999px;
+        color: white;
+        font-size: 0.62rem;
+        font-weight: 850;
+        letter-spacing: 0.08em;
+        padding: 4px 7px;
+        text-transform: uppercase;
+      }
+
+      .actor.is-sender::after {
+        content: "Sends";
+        background: var(--accent-strong);
+      }
+
+      .actor.is-receiver::after {
+        content: "Receives";
+        background: var(--ownership);
+      }
+
+      .actor.is-owner::after {
+        content: "Owns step";
+        background: var(--state);
+      }
+
+      .actor-kind {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--muted);
+        font-size: 0.65rem;
+        font-weight: 820;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .actor-name {
+        display: block;
+        font-size: 0.94rem;
+        font-weight: 820;
+      }
+
+      .actor-role {
+        display: -webkit-box;
+        overflow: hidden;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.73rem;
+        line-height: 1.35;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+
+      .connection-layer {
+        position: absolute;
+        z-index: 3;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: visible;
+      }
+
+      .connection-layer marker path {
+        fill: var(--accent);
+      }
+
+      .flow-line {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 4;
+        marker-end: url("#arrowhead");
+      }
+
+      .flow-line.response {
+        stroke-dasharray: 10 7;
+      }
+
+      .flow-line.event {
+        stroke-dasharray: 2 8;
+        stroke-linecap: round;
+      }
+
+      .flow-line.queue {
+        stroke-width: 7;
+        stroke-dasharray: 2 3;
+      }
+
+      .flow-pulse {
+        fill: var(--surface);
+        stroke: var(--accent);
+        stroke-width: 4;
+      }
+
+      .flow-label {
+        position: absolute;
+        z-index: 4;
+        max-width: 230px;
+        transform: translate(-50%, -50%);
+        border: 1px solid var(--accent);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--accent-strong);
+        font-size: 0.7rem;
+        font-weight: 820;
+        line-height: 1.2;
+        padding: 6px 10px;
+        pointer-events: none;
+        text-align: center;
+      }
+
+      .start-cue {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin: 13px 2px 0;
+        color: var(--accent-strong);
+        font-size: 0.82rem;
+        font-weight: 760;
+      }
+
+      .start-dot {
+        width: 11px;
+        height: 11px;
+        flex: 0 0 auto;
+        border: 3px solid var(--surface);
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent);
+      }
+
+      .artifact-shelf {
+        min-height: 92px;
+        border-top: 1px solid var(--line);
+        padding: 14px 18px 16px;
+      }
+
+      .artifact-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .artifact-button {
+        border-radius: 9px;
+        background: var(--state-soft);
+        color: var(--state);
+        padding: 8px 10px;
+        font-size: 0.76rem;
+      }
+
+      .empty-note {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-style: italic;
+      }
+
+      .teaching-column {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        background: color-mix(in srgb, var(--surface-2) 70%, var(--surface));
+      }
+
+      .step-card {
+        flex: 1;
+        padding: 24px clamp(18px, 2.3vw, 30px);
+      }
+
+      .step-kicker {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .step-number {
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 850;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .kind-badge {
+        border-color: var(--accent);
+        color: var(--accent-strong);
+        text-transform: uppercase;
+      }
+
+      .step-card h2 {
+        margin: 14px 0 12px;
+        font-size: clamp(1.55rem, 2.4vw, 2.35rem);
+        letter-spacing: -0.04em;
+        line-height: 1.05;
+      }
+
+      .step-what {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.55;
+      }
+
+      .explain-grid {
+        display: grid;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .explain-box {
+        border-left: 3px solid var(--accent);
+        background: var(--surface);
+        padding: 10px 12px;
+      }
+
+      .explain-box.owner {
+        border-color: var(--ownership);
+      }
+
+      .explain-box strong {
+        display: block;
+        margin-bottom: 3px;
+        font-size: 0.72rem;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+
+      .explain-box p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.86rem;
+        line-height: 1.45;
+      }
+
+      .risk-box {
+        margin-top: 16px;
+        border: 1px solid var(--danger);
+        border-radius: var(--radius-small);
+        background: var(--danger-soft);
+        padding: 12px;
+      }
+
+      .risk-box strong {
+        color: var(--danger);
+        font-size: 0.78rem;
+      }
+
+      .risk-box p {
+        margin: 5px 0 0;
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+
+      .tradeoff-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 14px;
+      }
+
+      .tradeoff-link {
+        border: 1px solid var(--decision);
+        border-radius: 999px;
+        background: var(--decision-soft);
+        color: var(--decision);
+        cursor: pointer;
+        font-size: 0.75rem;
+        font-weight: 780;
+        padding: 7px 10px;
+      }
+
+      .step-nav {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 9px;
+        border-top: 1px solid var(--line);
+        padding: 14px 18px;
+      }
+
+      .icon-button,
+      .primary-button {
+        min-height: 42px;
+        padding: 9px 14px;
+      }
+
+      .icon-button:disabled,
+      .primary-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
+
+      .primary-button {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: var(--surface);
+      }
+
+      .progress-track {
+        position: relative;
+        align-self: center;
+        height: 5px;
+        overflow: hidden;
+        border-radius: 99px;
+        background: var(--line);
+      }
+
+      .progress-fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0;
+        border-radius: inherit;
+        background: var(--accent);
+        transition: width 220ms ease;
+      }
+
+      .inspector {
+        border-top: 1px solid var(--line);
+        background: var(--surface);
+      }
+
+      .inspector-head {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 18px 8px;
+      }
+
+      .inspector-tabs {
+        display: flex;
+        gap: 5px;
+        overflow-x: auto;
+        padding: 3px 18px 10px;
+      }
+
+      .inspector-tab {
+        flex: 0 0 auto;
+        border: 0;
+        border-bottom: 3px solid transparent;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 0.79rem;
+        font-weight: 780;
+        padding: 8px 10px;
+      }
+
+      .inspector-tab[aria-selected="true"] {
+        border-color: var(--accent);
+        color: var(--ink);
+      }
+
+      .inspector-content {
+        min-height: 180px;
+        border-top: 1px solid var(--line);
+        padding: 18px;
+      }
+
+      .inspect-grid,
+      .state-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .inspect-panel {
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-small);
+        background: var(--surface-2);
+        padding: 12px;
+      }
+
+      .inspect-panel h3 {
+        margin: 0 0 8px;
+        font-size: 0.8rem;
+      }
+
+      .inspect-panel pre {
+        overflow: auto;
+        margin: 0;
+        color: var(--muted);
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: 0.72rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .state-list,
+      .detail-list,
+      .responsibility-list {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .state-list li,
+      .detail-list li,
+      .responsibility-list li {
+        margin: 5px 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.4;
+      }
+
+      .state-before {
+        border-top: 4px solid var(--line-strong);
+      }
+
+      .state-after {
+        border-top: 4px solid var(--state);
+      }
+
+      .actor-detail h3,
+      .artifact-detail h3 {
+        margin: 0 0 5px;
+      }
+
+      .actor-detail p,
+      .artifact-detail p {
+        margin: 0 0 12px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .deep-dive {
+        display: grid;
+        gap: 22px;
+        margin-top: 30px;
+      }
+
+      .section-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        padding: clamp(18px, 3vw, 32px);
+      }
+
+      .section-heading {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(240px, 38rem);
+        gap: 20px;
+        align-items: end;
+        margin-bottom: 20px;
+      }
+
+      .section-heading h2 {
+        margin: 5px 0 0;
+        font-size: clamp(1.55rem, 3vw, 2.7rem);
+        letter-spacing: -0.04em;
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+        gap: 14px;
+      }
+
+      .concept-card {
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: var(--surface-2);
+        padding: 16px;
+      }
+
+      .concept-card h3 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+
+      .concept-card p {
+        margin: 6px 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.48;
+      }
+
+      .concept-card .constraint {
+        border-left: 3px solid var(--decision);
+        color: var(--ink);
+        padding-left: 9px;
+      }
+
+      .option-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .option {
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        background: var(--surface);
+        padding: 12px;
+      }
+
+      .option h4 {
+        margin: 0 0 8px;
+      }
+
+      .option .gain {
+        color: var(--success);
+      }
+
+      .option .cost {
+        color: var(--danger);
+      }
+
+      .failure-card {
+        border-top: 4px solid var(--danger);
+      }
+
+      .recall-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      details.recall {
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: var(--surface-2);
+        padding: 0 15px;
+      }
+
+      details.recall summary {
+        cursor: pointer;
+        font-weight: 760;
+        line-height: 1.4;
+        padding: 15px 0;
+      }
+
+      details.recall p {
+        border-top: 1px solid var(--line);
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.5;
+        padding: 14px 0 16px;
+      }
+
+      .reference-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .reference-grid h3 {
+        margin-top: 0;
+      }
+
+      .glossary-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+      }
+
+      .glossary-list div {
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 9px;
+      }
+
+      .glossary-list dt {
+        font-weight: 820;
+      }
+
+      .glossary-list dd {
+        margin: 3px 0 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.45;
+      }
+
+      .source-list,
+      .simplification-list {
+        margin: 0;
+        padding-left: 19px;
+      }
+
+      .source-list li,
+      .simplification-list li {
+        margin: 7px 0;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .source-list a {
+        color: var(--accent-strong);
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        clip-path: inset(50%);
+      }
+
+      @media (max-width: 980px) {
+        .masthead,
+        .section-heading {
+          grid-template-columns: 1fr;
+        }
+
+        .learning-grid {
+          grid-template-columns: 1fr;
+          min-height: 0;
+        }
+
+        .canvas-column {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .teaching-column {
+          min-height: 520px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          padding: 10px 6px 32px;
+        }
+
+        .lesson-toolbar,
+        .canvas-head,
+        .inspector-head {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .lesson-toolbar {
+          display: flex;
+        }
+
+        .scenario-tabs {
+          width: 100%;
+        }
+
+        .view-tabs {
+          width: 100%;
+          overflow-x: auto;
+        }
+
+        .map-scroll {
+          padding-right: 10px;
+          padding-left: 10px;
+        }
+
+        .inspect-grid,
+        .state-grid,
+        .reference-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .section-card {
+          border-radius: 15px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.001ms !important;
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+        }
+      }
+
+      @media print {
+        body {
+          background: white;
+          color: black;
+        }
+
+        .page {
+          max-width: none;
+          padding: 0;
+        }
+
+        .lesson-shell,
+        .section-card {
+          break-inside: avoid;
+          box-shadow: none;
+        }
+
+        .lesson-toolbar,
+        .step-nav,
+        .inspector-tabs {
+          display: none;
+        }
+
+        .learning-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .canvas-column {
+          border: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="masthead">
+        <div>
+          <p class="eyebrow">Interactive visual lesson</p>
+          <h1 id="topic-title">Technical concept</h1>
+          <p class="problem" id="topic-problem"></p>
+        </div>
+        <aside class="objective-card" aria-labelledby="objective-label">
+          <span class="micro-label" id="objective-label">Learning objective</span>
+          <p id="topic-objective"></p>
+          <div class="meta-line" id="topic-meta"></div>
+        </aside>
+      </header>
+
+      <section class="lesson-shell" aria-label="Guided system lesson">
+        <div class="lesson-toolbar">
+          <div class="scenario-tabs" id="scenario-tabs" role="tablist" aria-label="Scenarios"></div>
+          <div class="view-tabs" aria-label="System map view">
+            <button class="view-button" type="button" data-view="flow" aria-pressed="true">Flow</button>
+            <button class="view-button" type="button" data-view="ownership" aria-pressed="false">Ownership</button>
+            <button class="view-button" type="button" data-view="state" aria-pressed="false">State</button>
+          </div>
+        </div>
+
+        <div class="learning-grid">
+          <div class="canvas-column">
+            <div class="canvas-head">
+              <div>
+                <span class="micro-label">System canvas</span>
+                <p id="scenario-summary"></p>
+              </div>
+              <span class="progress-text" id="progress-text" aria-live="polite"></span>
+            </div>
+
+            <div class="map-scroll">
+              <div class="map-region" id="map-region">
+                <div class="boundary-grid" id="boundary-grid"></div>
+                <svg class="connection-layer" id="connection-layer" aria-hidden="true">
+                  <defs>
+                    <marker
+                      id="arrowhead"
+                      markerWidth="10"
+                      markerHeight="10"
+                      refX="8"
+                      refY="5"
+                      orient="auto-start-reverse"
+                    >
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"></path>
+                    </marker>
+                  </defs>
+                  <path id="flow-line" class="flow-line"></path>
+                  <circle id="flow-pulse" class="flow-pulse" r="7"></circle>
+                </svg>
+                <div class="flow-label" id="flow-label" hidden></div>
+              </div>
+              <div class="start-cue">
+                <span class="start-dot" aria-hidden="true"></span>
+                <span id="start-cue-text"></span>
+              </div>
+            </div>
+
+            <div class="artifact-shelf">
+              <span class="micro-label">Artifacts active in this step</span>
+              <div class="artifact-list" id="artifact-list"></div>
+              <p class="empty-note" id="artifact-empty">No material artifact crosses this boundary.</p>
+            </div>
+          </div>
+
+          <aside class="teaching-column" aria-label="Current step explanation">
+            <div class="step-card">
+              <div class="step-kicker">
+                <span class="step-number" id="step-number"></span>
+                <span class="badge kind-badge" id="step-kind"></span>
+              </div>
+              <h2 id="step-title"></h2>
+              <p class="step-what" id="step-what"></p>
+              <div class="explain-grid">
+                <div class="explain-box">
+                  <strong>Why this happens</strong>
+                  <p id="step-why"></p>
+                </div>
+                <div class="explain-box owner">
+                  <strong>Who owns this step</strong>
+                  <p id="step-owner"></p>
+                </div>
+              </div>
+              <div class="risk-box" id="risk-box" hidden>
+                <strong>What can go wrong here</strong>
+                <p id="risk-text"></p>
+              </div>
+              <div class="tradeoff-links" id="tradeoff-links"></div>
+            </div>
+
+            <div class="step-nav">
+              <button class="icon-button" id="previous-step" type="button" aria-label="Previous step">
+                ← Previous
+              </button>
+              <div class="progress-track" aria-hidden="true">
+                <span class="progress-fill" id="progress-fill"></span>
+              </div>
+              <button class="primary-button" id="next-step" type="button">Next →</button>
+            </div>
+            <div class="step-actions" style="justify-content: center; padding: 0 18px 14px">
+              <button class="icon-button" id="restart-flow" type="button">↺ Restart</button>
+              <button class="icon-button" id="play-flow" type="button" aria-pressed="false">▶ Play flow</button>
+            </div>
+          </aside>
+        </div>
+
+        <section class="inspector" aria-labelledby="inspector-title">
+          <div class="inspector-head">
+            <div>
+              <span class="micro-label">Inspect</span>
+              <strong id="inspector-title">What changed?</strong>
+            </div>
+            <span class="badge" id="transport-badge" hidden></span>
+          </div>
+          <div class="inspector-tabs" id="inspector-tabs" role="tablist" aria-label="Step details">
+            <button class="inspector-tab" type="button" data-inspector="state" aria-selected="true">
+              State change
+            </button>
+            <button class="inspector-tab" type="button" data-inspector="exchange" aria-selected="false">
+              Exchange
+            </button>
+            <button class="inspector-tab" type="button" data-inspector="ownership" aria-selected="false">
+              Responsibility
+            </button>
+          </div>
+          <div class="inspector-content" id="inspector-content"></div>
+        </section>
+      </section>
+
+      <div class="deep-dive">
+        <section class="section-card" id="variants-section">
+          <div class="section-heading">
+            <div>
+              <span class="micro-label">Compare</span>
+              <h2>What changes under different constraints?</h2>
+            </div>
+            <p>
+              Variants are changes to the system model, not merely different names for the same flow.
+            </p>
+          </div>
+          <div class="card-grid" id="variant-grid"></div>
+        </section>
+
+        <section class="section-card" id="failures-section">
+          <div class="section-heading">
+            <div>
+              <span class="micro-label">Stress the model</span>
+              <h2>Where assumptions fail</h2>
+            </div>
+            <p>Failures are attached to the point where they become detectable and recoverable.</p>
+          </div>
+          <div class="card-grid" id="failure-grid"></div>
+        </section>
+
+        <section class="section-card" id="tradeoffs-section">
+          <div class="section-heading">
+            <div>
+              <span class="micro-label">Decide</span>
+              <h2>Tradeoffs created by the constraints</h2>
+            </div>
+            <p>Each choice connects an assumption to what it gains and what it costs.</p>
+          </div>
+          <div class="card-grid" id="tradeoff-grid"></div>
+        </section>
+
+        <section class="section-card" id="recall-section">
+          <div class="section-heading">
+            <div>
+              <span class="micro-label">Active recall</span>
+              <h2>Can you reconstruct the model?</h2>
+            </div>
+            <p>Answer before revealing. Recognition is easier than understanding.</p>
+          </div>
+          <div class="recall-grid" id="recall-grid"></div>
+        </section>
+
+        <section class="section-card" id="reference-section">
+          <div class="section-heading">
+            <div>
+              <span class="micro-label">Reference</span>
+              <h2>Terms, simplifications, and sources</h2>
+            </div>
+            <p id="key-idea"></p>
+          </div>
+          <div class="reference-grid">
+            <div>
+              <h3>Glossary</h3>
+              <dl class="glossary-list" id="glossary-list"></dl>
+            </div>
+            <div>
+              <h3>Simplifications</h3>
+              <ul class="simplification-list" id="simplification-list"></ul>
+              <h3>Sources</h3>
+              <ul class="source-list" id="source-list"></ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script id="lesson-data" type="application/json">{
+  "version": 1,
+  "topic": {
+    "title": "OAuth from browser to server",
+    "problem": "A browser UI needs to sign a person in and call CRUD endpoints without learning the person's identity-provider password or exposing long-lived OAuth tokens to browser JavaScript.",
+    "keyIdea": "Let the identity provider prove who signed in, let the application server own OAuth and session secrets, and let the REST API make every application-specific authorization decision.",
+    "objective": "Trace sign-in and an authenticated CRUD request, then explain who creates, stores, sends, and validates every credential.",
+    "level": "conceptual → HTTP detail",
+    "scope": "OIDC Authorization Code + PKCE, server session, same-origin REST API",
+    "outOfScope": [
+      "Provider-specific SDK configuration",
+      "Enterprise federation protocols",
+      "A complete threat model",
+      "JWT cryptography implementation"
+    ],
+    "modelType": "Common production pattern based on OAuth and OpenID Connect standards"
+  },
+  "boundaries": [
+    {
+      "id": "user-device",
+      "name": "User-controlled device",
+      "type": "ownership",
+      "owner": "The user",
+      "description": "Browser code and storage are observable and influenceable by the user, extensions, and injected scripts."
+    },
+    {
+      "id": "application",
+      "name": "Your application",
+      "type": "security",
+      "owner": "Your engineering team",
+      "description": "The server can protect credentials, enforce policy, and access the application's database."
+    },
+    {
+      "id": "identity-provider",
+      "name": "Identity provider",
+      "type": "trust",
+      "owner": "The identity-provider operator",
+      "description": "A separately operated authorization server and OpenID Provider whose signed identity assertions your server explicitly trusts."
+    }
+  ],
+  "actors": [
+    {
+      "id": "browser",
+      "name": "Browser UI",
+      "kind": "public user agent",
+      "boundaryId": "user-device",
+      "role": "Renders the UI, follows redirects, and fetches your REST endpoints.",
+      "responsibilities": [
+        "Start sign-in through a top-level navigation",
+        "Automatically send a scoped application session cookie",
+        "Send CSRF evidence required by the server",
+        "Render REST responses"
+      ],
+      "doesNotOwn": [
+        "Identity-provider password",
+        "OAuth client credential",
+        "PKCE verifier in this server-side pattern",
+        "Provider access or refresh tokens",
+        "Final authorization decisions"
+      ]
+    },
+    {
+      "id": "app-server",
+      "name": "Application server + REST API",
+      "kind": "confidential OAuth client / resource server",
+      "boundaryId": "application",
+      "role": "Handles OIDC, owns the application session, authenticates requests, authorizes operations, and performs CRUD.",
+      "responsibilities": [
+        "Register an exact callback URI and protect its client credential",
+        "Create and validate state, nonce, and a PKCE verifier",
+        "Exchange the authorization code at the token endpoint",
+        "Validate the ID Token and map issuer plus subject to a local user",
+        "Create, rotate, expire, and revoke application sessions",
+        "Enforce CSRF defenses and object-level authorization",
+        "Return only the application data the caller may see"
+      ],
+      "doesNotOwn": [
+        "The user's identity-provider credentials",
+        "The identity provider's login ceremony",
+        "The browser runtime",
+        "The user's consent decision"
+      ]
+    },
+    {
+      "id": "app-database",
+      "name": "Application database",
+      "kind": "persistent data store",
+      "boundaryId": "application",
+      "role": "Stores local users, sessions, permissions, and CRUD records.",
+      "responsibilities": [
+        "Persist application-owned identity mappings",
+        "Persist opaque session records when server-side sessions are chosen",
+        "Enforce storage constraints and transactional updates",
+        "Return only data requested through the server"
+      ],
+      "doesNotOwn": [
+        "HTTP authentication",
+        "OAuth protocol validation",
+        "Business authorization policy",
+        "Identity-provider accounts"
+      ]
+    },
+    {
+      "id": "authorization-server",
+      "name": "Authorization server / OpenID Provider",
+      "kind": "external trust authority",
+      "boundaryId": "identity-provider",
+      "role": "Authenticates the user, obtains authorization, issues codes and tokens, and publishes verification keys.",
+      "responsibilities": [
+        "Authenticate the person using provider-controlled methods",
+        "Display consent when the requested authorization requires it",
+        "Bind the code to the client, redirect URI, and PKCE challenge",
+        "Issue and sign ID Tokens",
+        "Issue scoped access tokens for the intended resource server"
+      ],
+      "doesNotOwn": [
+        "Your application's user record",
+        "Your application's session cookie",
+        "Your CRUD database",
+        "Your record-level access policy"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "login-navigation",
+      "name": "Login navigation",
+      "kind": "HTTP request",
+      "description": "A top-level request that asks the server to start a sign-in transaction.",
+      "createdBy": "browser",
+      "heldBy": [
+        "browser",
+        "app-server"
+      ],
+      "validatedBy": [
+        "app-server"
+      ],
+      "sensitivity": "not a credential",
+      "lifetime": "one request",
+      "representation": "GET /auth/login"
+    },
+    {
+      "id": "authorization-transaction",
+      "name": "Authorization transaction",
+      "kind": "transient server state",
+      "description": "Transaction-specific state, nonce, PKCE verifier, and intended return location. Only derived values that belong in the authorization request cross into the browser.",
+      "createdBy": "app-server",
+      "heldBy": [
+        "app-server",
+        "app-database"
+      ],
+      "validatedBy": [
+        "app-server",
+        "authorization-server"
+      ],
+      "sensitivity": "state, nonce, and verifier require protection",
+      "lifetime": "minutes; single transaction",
+      "representation": "{ state: \u003crandom\u003e, nonce: \u003crandom\u003e, verifier: \u003csecret\u003e, returnTo: /items }"
+    },
+    {
+      "id": "client-credential",
+      "name": "OAuth client credential",
+      "kind": "server credential",
+      "description": "A credential or private key that lets the authorization server authenticate this confidential application client.",
+      "createdBy": "authorization-server",
+      "heldBy": [
+        "app-server",
+        "authorization-server"
+      ],
+      "validatedBy": [
+        "authorization-server"
+      ],
+      "sensitivity": "secret; never browser-visible",
+      "lifetime": "long-lived but rotated",
+      "representation": "\u003cserver-side credential or private key\u003e"
+    },
+    {
+      "id": "authorization-code",
+      "name": "Authorization code",
+      "kind": "short-lived one-time credential",
+      "description": "An intermediate value delivered through the browser and redeemable only under the code's binding conditions.",
+      "createdBy": "authorization-server",
+      "heldBy": [
+        "authorization-server",
+        "browser",
+        "app-server"
+      ],
+      "validatedBy": [
+        "authorization-server"
+      ],
+      "sensitivity": "sensitive; not an access token",
+      "lifetime": "very short; single use",
+      "representation": "code=\u003credacted\u003e\u0026state=\u003creturned-state\u003e"
+    },
+    {
+      "id": "id-token",
+      "name": "ID Token",
+      "kind": "signed identity assertion",
+      "description": "An OpenID Connect assertion about the authentication event and subject. It is consumed by the application client, not used as the browser's API credential.",
+      "createdBy": "authorization-server",
+      "heldBy": [
+        "authorization-server",
+        "app-server"
+      ],
+      "validatedBy": [
+        "app-server"
+      ],
+      "sensitivity": "may contain personal claims",
+      "lifetime": "short; validated at sign-in",
+      "representation": "header.\u003ciss, sub, aud, exp, nonce\u003e.signature"
+    },
+    {
+      "id": "provider-access-token",
+      "name": "Provider access token",
+      "kind": "delegated API credential",
+      "description": "A scoped credential for a specific resource server such as the provider's UserInfo API. The primary lesson does not send it to your own REST API.",
+      "createdBy": "authorization-server",
+      "heldBy": [
+        "authorization-server",
+        "app-server"
+      ],
+      "validatedBy": [
+        "authorization-server"
+      ],
+      "sensitivity": "bearer credential unless sender-constrained",
+      "lifetime": "short; discard if unused",
+      "representation": "\u003copaque or structured access token; redacted\u003e"
+    },
+    {
+      "id": "session-record",
+      "name": "Application session record",
+      "kind": "server-side authentication state",
+      "description": "Maps an opaque session identifier to the local user, expiry, assurance, and revocation state.",
+      "createdBy": "app-server",
+      "heldBy": [
+        "app-server",
+        "app-database"
+      ],
+      "validatedBy": [
+        "app-server"
+      ],
+      "sensitivity": "security-critical application state",
+      "lifetime": "application policy; idle and absolute expiry",
+      "representation": "{ sessionHash, userId, expiresAt, revokedAt: null }"
+    },
+    {
+      "id": "session-cookie",
+      "name": "Application session cookie",
+      "kind": "opaque browser credential",
+      "description": "A high-entropy handle that points to server-side session state. HttpOnly keeps it out of JavaScript, but the browser can still attach it to requests.",
+      "createdBy": "app-server",
+      "heldBy": [
+        "browser"
+      ],
+      "validatedBy": [
+        "app-server"
+      ],
+      "sensitivity": "credential; theft enables session use",
+      "lifetime": "aligned with application session",
+      "representation": "__Host-Http-session=\u003copaque\u003e; Secure; HttpOnly; SameSite=Strict; Path=/"
+    },
+    {
+      "id": "csrf-evidence",
+      "name": "CSRF evidence",
+      "kind": "request integrity signal",
+      "description": "Evidence required by the server so another site cannot make an accepted state-changing request with an automatically attached cookie.",
+      "createdBy": "app-server",
+      "heldBy": [
+        "browser",
+        "app-server"
+      ],
+      "validatedBy": [
+        "app-server"
+      ],
+      "sensitivity": "not a replacement for the session credential",
+      "lifetime": "request, session, or policy dependent",
+      "representation": "X-CSRF: \u003cvalue\u003e plus strict Origin/CORS policy"
+    },
+    {
+      "id": "crud-request",
+      "name": "CRUD request",
+      "kind": "application message",
+      "description": "The method, route, body, and automatically attached session cookie sent to an application REST endpoint.",
+      "createdBy": "browser",
+      "heldBy": [
+        "browser",
+        "app-server"
+      ],
+      "validatedBy": [
+        "app-server"
+      ],
+      "sensitivity": "may contain personal or business data",
+      "lifetime": "one request",
+      "representation": "POST /api/items\nContent-Type: application/json\nX-CSRF: \u003cvalue\u003e\n\n{\"title\":\"Read RFC 9700\"}"
+    },
+    {
+      "id": "database-record",
+      "name": "Application data row",
+      "kind": "durable application state",
+      "description": "A CRUD record owned by the application and associated with the authorized local user or tenant.",
+      "createdBy": "app-server",
+      "heldBy": [
+        "app-database"
+      ],
+      "validatedBy": [
+        "app-server",
+        "app-database"
+      ],
+      "sensitivity": "application dependent",
+      "lifetime": "until updated or deleted",
+      "representation": "{ id: \"item-42\", ownerUserId: \"user-7\", title: \"Read RFC 9700\" }"
+    },
+    {
+      "id": "crud-response",
+      "name": "CRUD response",
+      "kind": "HTTP response",
+      "description": "The minimal authorized application representation returned to the browser.",
+      "createdBy": "app-server",
+      "heldBy": [
+        "app-server",
+        "browser"
+      ],
+      "validatedBy": [
+        "browser"
+      ],
+      "sensitivity": "application dependent",
+      "lifetime": "response/cache policy",
+      "representation": "HTTP/1.1 201 Created\nContent-Type: application/json\n\n{\"id\":\"item-42\",\"title\":\"Read RFC 9700\"}"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "oidc-sign-in",
+      "name": "1 · Sign in",
+      "summary": "OpenID Connect (OIDC) uses OAuth's Authorization Code flow; the server turns the validated result into its own application session.",
+      "start": "The user chooses “Sign in” and the browser navigates to the server.",
+      "steps": [
+        {
+          "number": 1,
+          "title": "The browser asks to sign in",
+          "kind": "human-action",
+          "from": "browser",
+          "to": "app-server",
+          "label": "GET /auth/login",
+          "what": "A click causes a top-level navigation to the server's login-start endpoint.",
+          "why": "Redirect-based sign-in temporarily leaves the single-page UI, so navigation—not an ordinary JSON fetch—is the natural starting mechanism.",
+          "owner": "browser",
+          "transport": "HTTPS",
+          "artifacts": [
+            "login-navigation"
+          ],
+          "stateBefore": [
+            "The browser has no application session cookie.",
+            "The server has no authorization transaction for this browser."
+          ],
+          "stateAfter": [
+            "The server knows a sign-in attempt should begin.",
+            "No user has been authenticated yet."
+          ],
+          "inspect": {
+            "request": "GET /auth/login HTTP/1.1\nHost: app.example",
+            "important": [
+              "The route is illustrative, not defined by OAuth.",
+              "Do not accept an arbitrary post-login redirect target without strict validation."
+            ]
+          },
+          "risk": {
+            "trigger": "An attacker supplies an unchecked return URL.",
+            "effect": "The application can become an open redirector after login.",
+            "response": "Use a fixed destination or an allowlisted relative path."
+          },
+          "tradeoffIds": [
+            "where-oauth-runs"
+          ]
+        },
+        {
+          "number": 2,
+          "title": "The server creates a bound transaction",
+          "kind": "response",
+          "from": "app-server",
+          "to": "browser",
+          "label": "302 → /authorize",
+          "what": "The server creates state, nonce, and a PKCE verifier, stores the protected transaction, and redirects the browser with the matching challenge.",
+          "why": "The callback must be tied to the same browser transaction, client, and authorization request; PKCE also binds code redemption to the initiator.",
+          "owner": "app-server",
+          "transport": "HTTPS redirect",
+          "artifacts": [
+            "authorization-transaction"
+          ],
+          "stateBefore": [
+            "No transaction-specific state exists."
+          ],
+          "stateAfter": [
+            "The server stores state, nonce, verifier, expiry, and intended return location.",
+            "The browser receives an authorization URL containing state, nonce, and the S256 code challenge—not the verifier."
+          ],
+          "inspect": {
+            "response": "HTTP/1.1 302 Found\nLocation: https://id.example/authorize?\n  client_id=app-web\u0026response_type=code\u0026scope=openid\n  \u0026redirect_uri=https%3A%2F%2Fapp.example%2Fauth%2Fcallback\n  \u0026state=\u003crandom\u003e\u0026nonce=\u003crandom\u003e\n  \u0026code_challenge=\u003cS256\u003e\u0026code_challenge_method=S256",
+            "serverOnly": "{ verifier: \u003csecret\u003e, expiresAt: \u003csoon\u003e, returnTo: /items }"
+          },
+          "risk": {
+            "trigger": "State, nonce, or PKCE values are constant, guessable, or not bound to this transaction.",
+            "effect": "The client can accept an injected or confused authorization response.",
+            "response": "Generate high-entropy transaction-specific values and expire them quickly."
+          },
+          "tradeoffIds": []
+        },
+        {
+          "number": 3,
+          "title": "The provider authenticates the person",
+          "kind": "request",
+          "from": "browser",
+          "to": "authorization-server",
+          "label": "GET /authorize",
+          "what": "The browser follows the redirect. The provider authenticates the person and obtains any required authorization or consent.",
+          "why": "The identity-provider password and stronger authentication methods stay inside the provider's trust domain; your application never receives them.",
+          "owner": "authorization-server",
+          "transport": "HTTPS",
+          "artifacts": [
+            "authorization-transaction"
+          ],
+          "stateBefore": [
+            "The provider has an authorization request but has not approved it.",
+            "Your server does not know who is at the browser."
+          ],
+          "stateAfter": [
+            "The provider has authenticated a subject and recorded the authorization decision.",
+            "Your server still has no trusted identity result."
+          ],
+          "inspect": {
+            "providerInput": "client_id, redirect_uri, scope=openid, state, nonce, code_challenge",
+            "providerChecks": [
+              "Exact registered redirect URI",
+              "Known client identifier",
+              "Supported response type and PKCE method",
+              "Provider-controlled authentication and consent policy"
+            ]
+          },
+          "risk": {
+            "trigger": "The user is sent to a lookalike provider page.",
+            "effect": "Credentials can be phished outside the real provider.",
+            "response": "Use configured provider metadata and trusted authorization endpoints; do not construct endpoints from untrusted input."
+          },
+          "tradeoffIds": []
+        },
+        {
+          "number": 4,
+          "title": "The provider returns a one-time code",
+          "kind": "response",
+          "from": "authorization-server",
+          "to": "browser",
+          "label": "303 → callback?code\u0026state",
+          "what": "The provider redirects the browser to the application's exact callback URI with an authorization code and the original state.",
+          "why": "The front channel carries only a short-lived, single-use intermediate code, not the final tokens.",
+          "owner": "authorization-server",
+          "transport": "HTTPS redirect",
+          "artifacts": [
+            "authorization-code"
+          ],
+          "stateBefore": [
+            "The provider holds an approved authorization transaction.",
+            "No code has been delivered."
+          ],
+          "stateAfter": [
+            "A short-lived code exists and is bound to the client, redirect URI, and PKCE challenge.",
+            "The browser temporarily carries code and state in the callback URL."
+          ],
+          "inspect": {
+            "response": "HTTP/1.1 303 See Other\nLocation: https://app.example/auth/callback?\n  code=\u003cone-time-code\u003e\u0026state=\u003creturned-state\u003e",
+            "important": [
+              "The code is not proof of identity by itself.",
+              "The browser can see the code, so redemption bindings matter."
+            ]
+          },
+          "risk": {
+            "trigger": "The redirect URI is loosely matched or an open redirector is allowed.",
+            "effect": "The authorization code can be delivered to an attacker-controlled location.",
+            "response": "Register and compare exact redirect URIs."
+          },
+          "tradeoffIds": []
+        },
+        {
+          "number": 5,
+          "title": "The callback rejects the wrong transaction",
+          "kind": "request",
+          "from": "browser",
+          "to": "app-server",
+          "label": "GET /auth/callback",
+          "what": "The browser delivers code and state. The server requires an unexpired matching transaction before doing anything with the code.",
+          "why": "A callback arriving at your domain is untrusted input until it is tied to the sign-in transaction that your server initiated.",
+          "owner": "app-server",
+          "transport": "HTTPS",
+          "artifacts": [
+            "authorization-code",
+            "authorization-transaction"
+          ],
+          "stateBefore": [
+            "The server holds the original state, nonce, and PKCE verifier.",
+            "The browser carries returned code and state."
+          ],
+          "stateAfter": [
+            "The state value is accepted exactly once or the flow stops.",
+            "The server recovers the matching verifier and nonce."
+          ],
+          "inspect": {
+            "request": "GET /auth/callback?code=\u003credacted\u003e\u0026state=\u003creturned-state\u003e",
+            "serverChecks": [
+              "Returned state equals the stored transaction state",
+              "Transaction is unexpired and unused",
+              "Expected issuer is used when multiple providers are possible"
+            ]
+          },
+          "risk": {
+            "trigger": "Returned state does not match, is missing, expired, or already used.",
+            "effect": "The callback may belong to an attacker or a stale flow.",
+            "response": "Reject it; do not redeem the code; start a fresh sign-in."
+          },
+          "tradeoffIds": []
+        },
+        {
+          "number": 6,
+          "title": "The server exchanges the code",
+          "kind": "request",
+          "from": "app-server",
+          "to": "authorization-server",
+          "label": "POST /token",
+          "what": "Over the back channel, the confidential server presents the one-time code, redirect URI, PKCE verifier, and client authentication; the provider returns tokens.",
+          "why": "The back channel keeps final tokens out of URLs and browser JavaScript, while PKCE and client authentication make a stolen code insufficient.",
+          "owner": "app-server",
+          "transport": "HTTPS server-to-server",
+          "artifacts": [
+            "authorization-code",
+            "authorization-transaction",
+            "client-credential",
+            "id-token",
+            "provider-access-token"
+          ],
+          "stateBefore": [
+            "The code is unredeemed.",
+            "Only the server holds the PKCE verifier and client credential."
+          ],
+          "stateAfter": [
+            "The code is consumed and cannot be reused.",
+            "The server receives an ID Token and usually an access token.",
+            "No OAuth token is exposed to browser JavaScript."
+          ],
+          "inspect": {
+            "request": "POST /token\nContent-Type: application/x-www-form-urlencoded\n\u003cClient authentication\u003e\n\ngrant_type=authorization_code\n\u0026code=\u003credacted\u003e\n\u0026redirect_uri=https%3A%2F%2Fapp.example%2Fauth%2Fcallback\n\u0026code_verifier=\u003cserver-only\u003e",
+            "response": "200 OK\n{\"token_type\":\"Bearer\",\"access_token\":\"\u003credacted\u003e\",\"id_token\":\"\u003credacted\u003e\",\"expires_in\":900}"
+          },
+          "risk": {
+            "trigger": "The provider is unavailable, the code was replayed, or the verifier/redirect URI/client authentication is wrong.",
+            "effect": "No tokens are issued and sign-in cannot complete.",
+            "response": "Fail closed, discard the transaction, and let the user retry with a new flow."
+          },
+          "tradeoffIds": [
+            "where-oauth-runs"
+          ]
+        },
+        {
+          "number": 7,
+          "title": "The server validates identity and maps a local user",
+          "kind": "state",
+          "from": "app-server",
+          "to": "app-database",
+          "label": "Validate → map (iss, sub)",
+          "what": "The server validates the ID Token, then finds or creates an application user using the provider issuer and subject as the external identity key.",
+          "why": "OIDC establishes who authenticated; your application still needs its own stable user, tenant, roles, and lifecycle.",
+          "owner": "app-server",
+          "transport": "Private application data path",
+          "artifacts": [
+            "id-token",
+            "provider-access-token"
+          ],
+          "stateBefore": [
+            "The server has untrusted token bytes from the token response.",
+            "A local user may or may not already be linked."
+          ],
+          "stateAfter": [
+            "Signature, issuer, audience, expiry, and nonce are validated.",
+            "The database contains or resolves a local user mapped by (issuer, subject).",
+            "Provider access tokens are retained only if the server actually calls that provider's API."
+          ],
+          "inspect": {
+            "idTokenChecks": [
+              "Signature using the configured issuer's current keys",
+              "iss equals the configured issuer",
+              "aud contains this client identifier",
+              "exp and other required time claims are acceptable",
+              "nonce equals the transaction nonce"
+            ],
+            "identityKey": "external_identity(provider_issuer, subject) → local_user_id",
+            "doNotDo": "Do not treat an unvalidated JWT, email address, or access token as the login result."
+          },
+          "risk": {
+            "trigger": "The server skips issuer, audience, signature, expiry, or nonce validation—or keys users only by mutable email.",
+            "effect": "A token for another client/provider or a reassigned email can be accepted as the wrong account.",
+            "response": "Use a mature OIDC library and key the external identity by issuer plus subject."
+          },
+          "tradeoffIds": []
+        },
+        {
+          "number": 8,
+          "title": "The server creates its own session",
+          "kind": "response",
+          "from": "app-server",
+          "to": "browser",
+          "label": "Set-Cookie + redirect",
+          "what": "The server rotates any pre-login session, stores an opaque application session record, and sets a protected session cookie before redirecting back to the UI.",
+          "why": "The browser needs a credential for your application, not a copy of the provider's tokens. A server session creates that boundary.",
+          "owner": "app-server",
+          "transport": "HTTPS",
+          "artifacts": [
+            "session-record",
+            "session-cookie"
+          ],
+          "stateBefore": [
+            "The local user is known.",
+            "The browser still has no authenticated application session."
+          ],
+          "stateAfter": [
+            "The database holds a revocable session associated with the local user.",
+            "The browser holds only an opaque Secure, HttpOnly, SameSite cookie.",
+            "The authorization transaction is deleted or marked consumed."
+          ],
+          "inspect": {
+            "response": "HTTP/1.1 303 See Other\nSet-Cookie: __Host-Http-session=\u003copaque\u003e; Secure; HttpOnly; SameSite=Strict; Path=/\nLocation: /items",
+            "serverRecord": "{ hash(sessionId), userId, expiresAt, revokedAt: null }"
+          },
+          "risk": {
+            "trigger": "The pre-login session identifier is reused or the cookie lacks appropriate protections.",
+            "effect": "Session fixation, leakage, or unintended cross-site attachment becomes easier.",
+            "response": "Rotate on login; use HTTPS, Secure, HttpOnly, narrow scope, expiry, and an appropriate SameSite policy."
+          },
+          "tradeoffIds": [
+            "browser-api-credential",
+            "session-state-location"
+          ]
+        },
+        {
+          "number": 9,
+          "title": "The UI observes the application session",
+          "kind": "request",
+          "from": "browser",
+          "to": "app-server",
+          "label": "GET /api/session",
+          "what": "After the UI reloads, it fetches a session endpoint. The browser automatically attaches the application cookie; the server returns minimal local user state.",
+          "why": "The UI needs display state such as name and capabilities, while the server remains the source of truth for authentication and authorization.",
+          "owner": "app-server",
+          "transport": "HTTPS same-origin fetch",
+          "artifacts": [
+            "session-cookie",
+            "session-record"
+          ],
+          "stateBefore": [
+            "The browser has an opaque session cookie.",
+            "The server has a matching unexpired session record."
+          ],
+          "stateAfter": [
+            "The browser knows the UI may render an authenticated state.",
+            "The browser still does not possess the provider's ID, access, or refresh tokens."
+          ],
+          "inspect": {
+            "request": "GET /api/session\nCookie: __Host-Http-session=\u003copaque\u003e",
+            "response": "200 OK\n{\"user\":{\"displayName\":\"A. User\"},\"capabilities\":[\"items:create\"]}",
+            "note": "The server must still re-check authorization on every later endpoint; hiding a button is not enforcement."
+          },
+          "risk": {
+            "trigger": "Private session responses are cached as shared public content.",
+            "effect": "One user's data can be exposed through an intermediary cache.",
+            "response": "Use deliberate private/no-store cache controls for authenticated responses."
+          },
+          "tradeoffIds": []
+        }
+      ]
+    },
+    {
+      "id": "authenticated-crud",
+      "name": "2 · CRUD request",
+      "summary": "The provider leaves the hot path: the browser presents the application session, and the server authenticates, authorizes, and changes application-owned data.",
+      "start": "An already signed-in user submits the “new item” form.",
+      "steps": [
+        {
+          "number": 1,
+          "title": "The browser sends an application request",
+          "kind": "request",
+          "from": "browser",
+          "to": "app-server",
+          "label": "POST /api/items",
+          "what": "The UI sends JSON, required CSRF evidence, and the browser automatically attaches the application session cookie.",
+          "why": "The request must carry both business input and evidence that it belongs to an authenticated application session and an allowed browser origin.",
+          "owner": "browser",
+          "transport": "HTTPS same-origin fetch",
+          "artifacts": [
+            "crud-request",
+            "session-cookie",
+            "csrf-evidence"
+          ],
+          "stateBefore": [
+            "The browser holds an opaque application cookie.",
+            "No new item exists."
+          ],
+          "stateAfter": [
+            "The server has untrusted request input plus a candidate session identifier.",
+            "No write has occurred."
+          ],
+          "inspect": {
+            "request": "POST /api/items HTTP/1.1\nContent-Type: application/json\nCookie: __Host-Http-session=\u003copaque\u003e\nX-CSRF: \u003cvalue\u003e\n\n{\"title\":\"Read RFC 9700\"}",
+            "fetch": "fetch('/api/items', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRF': csrf }, body: JSON.stringify(input) })"
+          },
+          "risk": {
+            "trigger": "Cookies are accepted on a state-changing request without a sound CSRF defense.",
+            "effect": "Another site can cause the user's browser to submit an action the user did not intend.",
+            "response": "Use an appropriate SameSite policy plus a deliberate CSRF defense such as validated Origin and a required custom header/token."
+          },
+          "tradeoffIds": [
+            "browser-api-credential",
+            "ui-api-origin"
+          ]
+        },
+        {
+          "number": 2,
+          "title": "The server authenticates the session",
+          "kind": "request",
+          "from": "app-server",
+          "to": "app-database",
+          "label": "Lookup session hash",
+          "what": "The server hashes or otherwise safely looks up the opaque identifier and checks expiry, revocation, and user status.",
+          "why": "A cookie value is only a presented credential; server-owned session state determines whether it is currently valid and which local user it represents.",
+          "owner": "app-server",
+          "transport": "Private application data path",
+          "artifacts": [
+            "session-cookie",
+            "session-record"
+          ],
+          "stateBefore": [
+            "The request is unauthenticated input.",
+            "The database has a session record or no match."
+          ],
+          "stateAfter": [
+            "The request context contains an authenticated local user or the request stops with 401.",
+            "Session last-used/rotation state may be updated."
+          ],
+          "inspect": {
+            "lookup": "SELECT user_id, expires_at, revoked_at FROM sessions WHERE session_hash = hash(\u003copaque\u003e)",
+            "decision": "missing | expired | revoked | disabled user → 401 and clear cookie"
+          },
+          "risk": {
+            "trigger": "A session is expired, revoked, unknown, or belongs to a disabled user.",
+            "effect": "The operation is unauthenticated.",
+            "response": "Return 401, avoid the write, and clear or rotate stale client state."
+          },
+          "tradeoffIds": [
+            "session-state-location"
+          ]
+        },
+        {
+          "number": 3,
+          "title": "The server authorizes this operation",
+          "kind": "decision",
+          "from": "app-server",
+          "to": "app-server",
+          "label": "May user create item?",
+          "what": "The REST handler checks application roles, tenant membership, ownership rules, and input constraints for this exact operation.",
+          "why": "Authentication answers “which local user?” OAuth scopes or UI visibility alone do not answer “may this user change this particular record?”",
+          "owner": "app-server",
+          "transport": "Internal policy decision",
+          "artifacts": [
+            "crud-request",
+            "session-record"
+          ],
+          "stateBefore": [
+            "The request has an authenticated local user.",
+            "Permission for this operation has not been established."
+          ],
+          "stateAfter": [
+            "The operation is allowed with a specific owner/tenant context or stops with 403.",
+            "The provider is not contacted."
+          ],
+          "inspect": {
+            "policyInput": "{ userId, tenantId, roles, operation: 'item:create', validatedInput }",
+            "policyOutput": "allow with owner_user_id=user-7 | deny",
+            "distinction": "401 = no acceptable authentication; 403 = authenticated but not permitted"
+          },
+          "risk": {
+            "trigger": "The server trusts a userId from the JSON body or checks only that someone is logged in.",
+            "effect": "Broken object-level authorization lets one user read or change another user's data.",
+            "response": "Derive identity from the validated session and scope every query/update to the authorized user or tenant."
+          },
+          "tradeoffIds": []
+        },
+        {
+          "number": 4,
+          "title": "The server performs the authorized write",
+          "kind": "state",
+          "from": "app-server",
+          "to": "app-database",
+          "label": "INSERT authorized row",
+          "what": "The server writes validated business data together with the owner or tenant derived from the authorization context.",
+          "why": "Binding the record to server-derived identity at the write boundary preserves the policy decision in durable state.",
+          "owner": "app-server",
+          "transport": "Private application data path",
+          "artifacts": [
+            "database-record"
+          ],
+          "stateBefore": [
+            "The operation is authorized.",
+            "No item row exists."
+          ],
+          "stateAfter": [
+            "A durable row exists with a server-derived owner or tenant.",
+            "The database transaction is committed or rolled back."
+          ],
+          "inspect": {
+            "write": "INSERT INTO items (id, owner_user_id, title)\nVALUES ('item-42', authenticatedUser.id, validated.title)",
+            "important": "The owner_user_id is never copied from untrusted request JSON."
+          },
+          "risk": {
+            "trigger": "Authorization and the write use inconsistent tenant/owner conditions or a race changes relevant state.",
+            "effect": "A time-of-check/time-of-use gap can violate policy.",
+            "response": "Carry the authorization context into the query and use a transaction or atomic conditional write where needed."
+          },
+          "tradeoffIds": []
+        },
+        {
+          "number": 5,
+          "title": "The database returns committed state",
+          "kind": "response",
+          "from": "app-database",
+          "to": "app-server",
+          "label": "Committed row",
+          "what": "The database confirms the write and returns the application data needed to build the response.",
+          "why": "The server should respond from committed state so the UI does not mistake an uncommitted intention for a durable result.",
+          "owner": "app-database",
+          "transport": "Private application data path",
+          "artifacts": [
+            "database-record"
+          ],
+          "stateBefore": [
+            "The transaction is in progress."
+          ],
+          "stateAfter": [
+            "The row is committed and has its durable identifier.",
+            "The server can serialize an allowed representation."
+          ],
+          "inspect": {
+            "databaseResult": "{ id: 'item-42', owner_user_id: 'user-7', title: 'Read RFC 9700' }",
+            "serverRule": "Do not automatically expose every storage column in the REST response."
+          },
+          "risk": {
+            "trigger": "The write conflicts or the database is unavailable.",
+            "effect": "No reliable CRUD result exists.",
+            "response": "Roll back, return an appropriate 4xx/5xx response, and retry only when the operation is designed to be idempotent."
+          },
+          "tradeoffIds": []
+        },
+        {
+          "number": 6,
+          "title": "The server returns the authorized representation",
+          "kind": "response",
+          "from": "app-server",
+          "to": "browser",
+          "label": "201 Created + JSON",
+          "what": "The server returns a minimal JSON representation of the new item; the UI updates from the response.",
+          "why": "The server closes the request with data shaped by application policy, not by the provider's tokens or the database schema.",
+          "owner": "app-server",
+          "transport": "HTTPS",
+          "artifacts": [
+            "crud-response"
+          ],
+          "stateBefore": [
+            "The database contains the new row.",
+            "The browser has not observed the result."
+          ],
+          "stateAfter": [
+            "The browser has the permitted representation.",
+            "The application session remains active for later requests."
+          ],
+          "inspect": {
+            "response": "HTTP/1.1 201 Created\nContent-Type: application/json\nCache-Control: private, no-store\nLocation: /api/items/item-42\n\n{\"id\":\"item-42\",\"title\":\"Read RFC 9700\"}",
+            "notIncluded": [
+              "Session identifier",
+              "Provider tokens",
+              "Internal authorization fields",
+              "Other users' data"
+            ]
+          },
+          "risk": {
+            "trigger": "The response serializer exposes internal columns or another tenant's joined data.",
+            "effect": "Authorization succeeds for the action but confidential data leaks in the response.",
+            "response": "Use explicit response schemas and authorization-aware queries."
+          },
+          "tradeoffIds": []
+        }
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "id": "browser-public-client",
+      "name": "Browser is the OAuth client",
+      "constraint": "There is no suitable server component to own OAuth tokens or proxy API calls.",
+      "changes": [
+        "Browser JavaScript becomes a public OAuth client and uses Authorization Code + PKCE.",
+        "The browser obtains an access token and sends Authorization: Bearer to the REST resource server.",
+        "The REST server validates issuer, audience, expiry, signature or introspection result, and scopes."
+      ],
+      "benefits": [
+        "No server-side application session is required.",
+        "The browser can call multiple permitted resource servers directly."
+      ],
+      "costs": [
+        "Tokens exist in the browser execution context and are more exposed to malicious JavaScript.",
+        "CORS, refresh-token handling, and token lifecycle move into the browser architecture.",
+        "A static browser-delivered client secret provides no confidentiality and must not be treated as secret."
+      ],
+      "assumptions": [
+        "The authorization server supports browser public clients, exact redirect origins, CORS at the token endpoint, and PKCE.",
+        "The resource API is prepared to accept and validate tokens minted for its audience."
+      ]
+    },
+    {
+      "id": "downstream-resource-server",
+      "name": "Server calls a separate protected API",
+      "constraint": "The application needs delegated access to a provider or another independently deployed resource server.",
+      "changes": [
+        "The application server retains the appropriately scoped access token with the session.",
+        "On a browser request, the server attaches that token to an allowlisted downstream API request.",
+        "The downstream resource server validates the token and its authorization claims."
+      ],
+      "benefits": [
+        "Provider tokens remain outside browser JavaScript.",
+        "The server can centralize refresh, retry, audit, and outbound destination controls."
+      ],
+      "costs": [
+        "The server becomes a token-holding proxy and sees all proxied traffic.",
+        "Token storage, refresh, downstream rate limiting, and strict proxy routing become operational responsibilities."
+      ],
+      "assumptions": [
+        "The access token's audience and scopes are intended for that downstream API.",
+        "The application server never forwards the token to arbitrary hosts."
+      ]
+    },
+    {
+      "id": "oauth-without-oidc",
+      "name": "Delegated API access without login",
+      "constraint": "The goal is to let the application call a protected API, not to establish the person's identity in the application.",
+      "changes": [
+        "Use OAuth authorization but do not infer login identity from an access token.",
+        "No ID Token is expected unless OpenID Connect is explicitly requested with scope openid."
+      ],
+      "benefits": [
+        "The design stays focused on delegated authorization and least-privilege API scopes."
+      ],
+      "costs": [
+        "The application needs a separate authentication mechanism if it also needs a signed-in local user."
+      ],
+      "assumptions": [
+        "The application does not treat provider-specific access-token contents as a portable identity assertion."
+      ]
+    },
+    {
+      "id": "cross-origin-ui-api",
+      "name": "UI and REST API use different origins",
+      "constraint": "Static UI and API must be deployed on separate origins.",
+      "changes": [
+        "Fetch credential mode, cookie attributes, CORS allowlists, preflight handling, and CSRF design become explicit.",
+        "The server must never combine credentialed requests with a wildcard allowed origin."
+      ],
+      "benefits": [
+        "Independent deployment and caching boundaries."
+      ],
+      "costs": [
+        "More browser security configuration and more ways to accidentally broaden trust."
+      ],
+      "assumptions": [
+        "Only exact trusted UI origins receive credentialed CORS access and the cookie policy works in target browsers."
+      ]
+    }
+  ],
+  "tradeoffs": [
+    {
+      "id": "where-oauth-runs",
+      "decision": "Where should OAuth responsibilities and provider tokens live?",
+      "context": "Browser JavaScript cannot keep a deployed static client credential secret, while the existing application server can protect credentials and already mediates every CRUD call.",
+      "options": [
+        {
+          "name": "Server-side BFF / confidential client",
+          "benefits": [
+            "OAuth tokens and client authentication remain server-side.",
+            "Fits the existing REST server and strongly reduces token extraction from browser JavaScript."
+          ],
+          "costs": [
+            "Requires session infrastructure, CSRF defenses, and server availability for every call."
+          ],
+          "chooseWhen": "The server already owns the UI's API and the data is sensitive or business-facing.",
+          "invalidWhen": "There is no trusted server component that can participate in every relevant API call."
+        },
+        {
+          "name": "Browser public client + PKCE",
+          "benefits": [
+            "The browser can call resource servers directly and no application session store is required."
+          ],
+          "costs": [
+            "Tokens are exposed to the browser execution environment and lifecycle/CORS complexity moves client-side."
+          ],
+          "chooseWhen": "Direct calls are a hard constraint and the risk is understood and mitigated.",
+          "invalidWhen": "The design assumes a JavaScript client secret or browser storage is a secure vault."
+        }
+      ]
+    },
+    {
+      "id": "browser-api-credential",
+      "decision": "What should the browser present to your REST API?",
+      "context": "Your server is both the OAuth client and the application resource server, and the browser only needs a session with your application.",
+      "options": [
+        {
+          "name": "Opaque Secure HttpOnly session cookie",
+          "benefits": [
+            "JavaScript cannot read the credential and the server can revoke it centrally."
+          ],
+          "costs": [
+            "The browser attaches cookies automatically, so CSRF defense is mandatory."
+          ],
+          "chooseWhen": "UI and API form one web application and the server owns the session.",
+          "invalidWhen": "The API must be consumed directly by unrelated non-browser clients using OAuth bearer tokens."
+        },
+        {
+          "name": "OAuth access token in Authorization header",
+          "benefits": [
+            "Explicit request attachment and natural interoperability with OAuth resource servers."
+          ],
+          "costs": [
+            "Browser JavaScript must obtain and use the token, increasing exposure to malicious code."
+          ],
+          "chooseWhen": "The browser really is the public OAuth client and the token audience is your API.",
+          "invalidWhen": "The token was minted for the provider's UserInfo API or another audience."
+        }
+      ]
+    },
+    {
+      "id": "session-state-location",
+      "decision": "Where should application session state live?",
+      "context": "The server must map a browser credential to local user, expiry, and revocation state.",
+      "options": [
+        {
+          "name": "Opaque cookie + database/cache record",
+          "benefits": [
+            "Small browser credential, immediate revocation, and no token payload in browser storage."
+          ],
+          "costs": [
+            "A server-side lookup and highly available session store are required."
+          ],
+          "chooseWhen": "Revocation, administrative logout, and server control matter.",
+          "invalidWhen": "The session store cannot meet availability and latency needs."
+        },
+        {
+          "name": "Protected self-contained session cookie",
+          "benefits": [
+            "Avoids a session lookup on ordinary requests."
+          ],
+          "costs": [
+            "Revocation is harder, cookies grow, and encryption/signing keys and rotation require care."
+          ],
+          "chooseWhen": "Session contents are minimal and bounded, and expiry-based invalidation is acceptable.",
+          "invalidWhen": "Raw provider tokens or mutable authorization state would be exposed or become stale inside the cookie."
+        }
+      ]
+    },
+    {
+      "id": "ui-api-origin",
+      "decision": "Should the browser UI and API share an origin?",
+      "context": "Separate origins add CORS and cookie-policy edges to every authenticated fetch.",
+      "options": [
+        {
+          "name": "Same origin",
+          "benefits": [
+            "Simpler cookie scope, fetch behavior, and CSRF/CORS reasoning."
+          ],
+          "costs": [
+            "UI and API routing must be presented behind one origin."
+          ],
+          "chooseWhen": "A reverse proxy or the application server can expose both under one site.",
+          "invalidWhen": "Independent origin isolation is a required deployment boundary."
+        },
+        {
+          "name": "Separate origins",
+          "benefits": [
+            "Independent deployment and origin boundaries."
+          ],
+          "costs": [
+            "Exact credentialed CORS, preflights, cookie attributes, and CSRF behavior require careful configuration."
+          ],
+          "chooseWhen": "Operational separation justifies the browser security complexity.",
+          "invalidWhen": "The proposed configuration uses wildcard credentialed CORS or relies on browser behavior that target clients block."
+        }
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "name": "Callback state mismatch",
+      "atStep": 5,
+      "scenarioId": "oidc-sign-in",
+      "trigger": "State is missing, different, expired, or already consumed.",
+      "detectedBy": "app-server",
+      "effect": "The server cannot bind this response to the initiating browser transaction.",
+      "recovery": "Reject the callback and start a fresh authorization request.",
+      "prevention": "Use unpredictable transaction-specific state bound to the browser interaction; combine it with PKCE and OIDC nonce validation."
+    },
+    {
+      "name": "Wrong or invalid ID Token",
+      "atStep": 7,
+      "scenarioId": "oidc-sign-in",
+      "trigger": "Signature, issuer, audience, expiry, or nonce validation fails.",
+      "detectedBy": "app-server",
+      "effect": "No trustworthy application identity can be established.",
+      "recovery": "Discard tokens and transaction state, log a redacted diagnostic, and require a new sign-in.",
+      "prevention": "Use configured issuer metadata and a maintained OIDC client library; never decode-and-trust."
+    },
+    {
+      "name": "Expired or revoked application session",
+      "atStep": 2,
+      "scenarioId": "authenticated-crud",
+      "trigger": "The cookie has no live matching session or the local user is disabled.",
+      "detectedBy": "app-server",
+      "effect": "The CRUD request receives 401 and no database mutation occurs.",
+      "recovery": "Clear the stale cookie and start sign-in again when appropriate.",
+      "prevention": "Use idle and absolute expiry, revocation, rotation, and server-side checks on every protected request."
+    },
+    {
+      "name": "Cross-site request forgery",
+      "atStep": 1,
+      "scenarioId": "authenticated-crud",
+      "trigger": "A state-changing request arrives with an automatically attached cookie but without acceptable origin/request-integrity evidence.",
+      "detectedBy": "app-server",
+      "effect": "If accepted, an attacker could cause actions through the victim's browser.",
+      "recovery": "Reject before business logic and record a security event without sensitive values.",
+      "prevention": "Use a fitting SameSite policy plus robust CSRF validation such as exact Origin checks and a required custom header or token."
+    },
+    {
+      "name": "Broken object-level authorization",
+      "atStep": 3,
+      "scenarioId": "authenticated-crud",
+      "trigger": "The API trusts a record owner from the request or performs a lookup/update without the authenticated user's tenant/owner constraint.",
+      "detectedBy": "app-server",
+      "effect": "One authenticated user can access or modify another user's record.",
+      "recovery": "Deny the operation, investigate affected data, and correct policy-aware queries.",
+      "prevention": "Derive identity from the session and include ownership/tenant constraints in every record-level operation."
+    },
+    {
+      "name": "Malicious JavaScript in the UI",
+      "atStep": 1,
+      "scenarioId": "authenticated-crud",
+      "trigger": "An XSS bug or compromised dependency executes code in the application's origin.",
+      "detectedBy": "browser",
+      "effect": "HttpOnly can block cookie extraction, but the script can still issue authorized same-origin actions and read responses available to the UI.",
+      "recovery": "Terminate sessions where appropriate, remove the injection source, rotate exposed data, and deploy corrected assets.",
+      "prevention": "Prevent injection, minimize third-party code, use output encoding and a restrictive Content Security Policy, and require re-authentication for sensitive actions."
+    }
+  ],
+  "checkpoints": [
+    {
+      "question": "The browser has just received code and state from the provider. What must happen before your application knows who signed in?",
+      "answer": "The browser delivers them to the callback; the server validates the transaction state, redeems the code with its PKCE verifier and client authentication, then validates the returned ID Token including issuer, audience, signature, expiry, and nonce."
+    },
+    {
+      "question": "During an ordinary POST /api/items, which credential crosses from the browser to your server in the primary architecture?",
+      "answer": "The opaque application session cookie, plus separate CSRF evidence. The provider ID Token and access token remain server-side and are not the browser's credential for this API."
+    },
+    {
+      "question": "Who decides whether user-7 may update item-42: the identity provider, the browser, or your REST server?",
+      "answer": "Your REST server. The provider establishes an external identity; the application maps it to a local user and enforces tenant, role, ownership, and record-level policy."
+    },
+    {
+      "question": "If the session cookie is HttpOnly, can malicious JavaScript still cause harm?",
+      "answer": "Yes. It may be unable to read the cookie value, but code running in the application's origin can still make requests with the cookie and read responses the UI can read. XSS prevention and sensitive-action controls still matter."
+    },
+    {
+      "question": "When should the server keep the provider access token after sign-in?",
+      "answer": "Only when it needs to call the resource server for which that token was issued, such as UserInfo or another provider API. It should not use an access token minted for a different audience as the credential for its own REST endpoints."
+    }
+  ],
+  "glossary": [
+    {
+      "term": "OAuth 2.0",
+      "definition": "A framework for delegated authorization: a client obtains limited access to protected resources without receiving the resource owner's password."
+    },
+    {
+      "term": "OpenID Connect (OIDC)",
+      "definition": "An identity layer on OAuth 2.0 that lets a client verify an end-user authentication through an ID Token."
+    },
+    {
+      "term": "Client",
+      "definition": "The software requesting authorization. In the primary pattern, your application server—not the browser—is the confidential OAuth client."
+    },
+    {
+      "term": "Authorization server / OpenID Provider",
+      "definition": "The external service that authenticates the person, handles authorization, and issues codes and tokens."
+    },
+    {
+      "term": "Resource server",
+      "definition": "The API that accepts an access token for a protected resource. Your REST API is an application resource server, while a provider may operate separate APIs such as UserInfo."
+    },
+    {
+      "term": "Authorization code",
+      "definition": "A short-lived, single-use intermediate credential returned through the browser and redeemed at the token endpoint."
+    },
+    {
+      "term": "PKCE",
+      "definition": "Proof Key for Code Exchange: the client commits to a challenge in the authorization request and proves possession of the verifier when redeeming the code."
+    },
+    {
+      "term": "ID Token",
+      "definition": "A signed OIDC assertion consumed by the client, containing claims about the authentication event and subject."
+    },
+    {
+      "term": "Access token",
+      "definition": "A credential representing scoped authorization for a particular protected resource; it is not automatically a login assertion."
+    },
+    {
+      "term": "Application session",
+      "definition": "Your server's own authenticated relationship with a browser, commonly represented by an opaque cookie plus server-side state."
+    },
+    {
+      "term": "Authentication vs authorization",
+      "definition": "Authentication establishes which subject is present; authorization decides whether that subject may perform a particular operation on particular data."
+    },
+    {
+      "term": "BFF",
+      "definition": "Backend for Frontend: a server-side component that owns OAuth responsibilities and mediates browser API requests so OAuth tokens need not be exposed to browser JavaScript."
+    }
+  ],
+  "simplifications": [
+    "The primary path is sign-in, so it uses OpenID Connect. OAuth alone does not standardize end-user identity.",
+    "The application server combines the confidential OIDC client, backend-for-frontend, REST API, and application resource-server responsibilities in one deployed component because that matches the requested architecture.",
+    "The application database is shown as the session store. A production system may use a separate durable database or cache with equivalent ownership and expiry behavior.",
+    "The provider access token is shown but not used by the application's own REST API. Keep it only if the server calls its intended provider resource server.",
+    "Refresh tokens, logout propagation, token revocation, key rotation, multi-provider issuer mix-up defenses, step-up authentication, and account-linking ceremonies are summarized rather than fully sequenced.",
+    "HTTP routes, response bodies, lifetimes, cookie names, roles, and SQL are illustrative. OAuth and OIDC do not prescribe your application endpoint names or database schema.",
+    "SameSite=Strict is shown as the simplest same-origin default from the browser-application BCP. Real redirect, multi-origin, and embedded deployments may require a different policy plus equally sound CSRF defenses.",
+    "A mature framework should implement protocol parsing, discovery, key rotation, token validation, and secure randomness; this lesson is a mental model, not copy-paste security code."
+  ],
+  "sources": [
+    {
+      "title": "RFC 10017 — OAuth 2.0 for Browser-Based Applications",
+      "url": "https://www.rfc-editor.org/rfc/rfc10017.html",
+      "kind": "IETF Best Current Practice; BFF, cookie, CSRF, and browser-client architecture guidance"
+    },
+    {
+      "title": "RFC 9700 — Best Current Practice for OAuth 2.0 Security",
+      "url": "https://www.rfc-editor.org/rfc/rfc9700.html",
+      "kind": "IETF Best Current Practice; authorization-code, PKCE, redirect, and token security"
+    },
+    {
+      "title": "OpenID Connect Core 1.0 incorporating errata set 2",
+      "url": "https://openid.net/specs/openid-connect-core-1_0-errata2.html",
+      "kind": "OpenID Foundation standard; authentication, ID Tokens, nonce, and validation"
+    },
+    {
+      "title": "RFC 7636 — Proof Key for Code Exchange by OAuth Public Clients",
+      "url": "https://www.rfc-editor.org/rfc/rfc7636.html",
+      "kind": "IETF standard; PKCE verifier and challenge"
+    },
+    {
+      "title": "RFC 6749 — The OAuth 2.0 Authorization Framework",
+      "url": "https://www.rfc-editor.org/rfc/rfc6749.html",
+      "kind": "IETF standard; roles, grants, and token concepts, as updated by later BCPs"
+    },
+    {
+      "title": "RFC 6750 — OAuth 2.0 Bearer Token Usage",
+      "url": "https://www.rfc-editor.org/rfc/rfc6750.html",
+      "kind": "IETF standard; bearer access tokens at resource servers"
+    }
+  ]
+}</script>
+    <script>
+      (() => {
+        "use strict";
+
+        const lesson = JSON.parse(document.getElementById("lesson-data").textContent);
+        const $ = (selector, root = document) => root.querySelector(selector);
+        const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+        const byId = (items, id) => (items || []).find((item) => item.id === id);
+        const asArray = (value) => (Array.isArray(value) ? value : value ? [value] : []);
+        const text = (node, value, fallback = "Not specified") => {
+          node.textContent = value || fallback;
+        };
+
+        const state = {
+          scenarioIndex: 0,
+          stepIndex: 0,
+          view: "flow",
+          inspector: "state",
+          selectedActorId: null,
+          selectedArtifactId: null,
+          playTimer: null,
+        };
+
+        const topic = lesson.topic || {};
+        const actors = lesson.actors || [];
+        const boundaries = lesson.boundaries || [];
+        const artifacts = lesson.artifacts || [];
+        const scenarios = lesson.scenarios || [];
+        const tradeoffs = lesson.tradeoffs || [];
+
+        if (!scenarios.length) {
+          throw new Error("The visual lesson needs at least one scenario.");
+        }
+
+        function currentScenario() {
+          return scenarios[state.scenarioIndex];
+        }
+
+        function currentSteps() {
+          return currentScenario().steps || [];
+        }
+
+        function currentStep() {
+          return currentSteps()[state.stepIndex] || {};
+        }
+
+        function actorName(id) {
+          return byId(actors, id)?.name || id || "Not assigned";
+        }
+
+        function appendChip(container, value) {
+          if (!value) return;
+          const chip = document.createElement("span");
+          chip.className = "chip";
+          chip.textContent = value;
+          container.append(chip);
+        }
+
+        function appendList(container, values, emptyText = "None for this step.") {
+          const items = asArray(values);
+          if (!items.length) {
+            const item = document.createElement("li");
+            item.textContent = emptyText;
+            container.append(item);
+            return;
+          }
+          items.forEach((value) => {
+            const item = document.createElement("li");
+            item.textContent = value;
+            container.append(item);
+          });
+        }
+
+        function createList(values, className = "detail-list", emptyText) {
+          const list = document.createElement("ul");
+          list.className = className;
+          appendList(list, values, emptyText);
+          return list;
+        }
+
+        function createPanel(title, className = "") {
+          const panel = document.createElement("section");
+          panel.className = `inspect-panel ${className}`.trim();
+          const heading = document.createElement("h3");
+          heading.textContent = title;
+          panel.append(heading);
+          return panel;
+        }
+
+        function safeSourceUrl(url) {
+          try {
+            const parsed = new URL(url);
+            return ["http:", "https:"].includes(parsed.protocol) ? parsed.href : null;
+          } catch {
+            return null;
+          }
+        }
+
+        function renderHeader() {
+          document.title = `${topic.title || "Technical concept"} — visual lesson`;
+          text($("#topic-title"), topic.title);
+          text($("#topic-problem"), topic.problem);
+          text($("#topic-objective"), topic.objective);
+          text($("#key-idea"), topic.keyIdea, "");
+
+          const meta = $("#topic-meta");
+          meta.replaceChildren();
+          appendChip(meta, topic.level);
+          appendChip(meta, topic.scope);
+          appendChip(meta, topic.modelType);
+        }
+
+        function renderScenarioTabs() {
+          const tabs = $("#scenario-tabs");
+          tabs.replaceChildren();
+          scenarios.forEach((scenario, index) => {
+            const button = document.createElement("button");
+            button.className = "tab";
+            button.type = "button";
+            button.role = "tab";
+            button.textContent = scenario.name;
+            button.setAttribute("aria-selected", String(index === state.scenarioIndex));
+            button.addEventListener("click", () => {
+              stopPlaying();
+              state.scenarioIndex = index;
+              state.stepIndex = 0;
+              state.selectedActorId = null;
+              state.selectedArtifactId = null;
+              renderLesson();
+            });
+            tabs.append(button);
+          });
+        }
+
+        function renderMap() {
+          const grid = $("#boundary-grid");
+          grid.replaceChildren();
+          grid.style.setProperty("--boundary-count", String(Math.max(boundaries.length, 1)));
+
+          boundaries.forEach((boundary) => {
+            const region = document.createElement("section");
+            region.className = "boundary";
+            region.dataset.boundaryId = boundary.id;
+            region.dataset.boundaryType = boundary.type || "system";
+            region.title = boundary.description || "";
+
+            const name = document.createElement("h3");
+            name.className = "boundary-name";
+            name.textContent = boundary.name;
+
+            const owner = document.createElement("p");
+            owner.className = "boundary-owner";
+            owner.textContent = boundary.owner ? `Controlled by ${boundary.owner}` : boundary.description || "";
+
+            const stack = document.createElement("div");
+            stack.className = "actor-stack";
+
+            actors
+              .filter((actor) => actor.boundaryId === boundary.id)
+              .forEach((actor) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "actor";
+                button.dataset.actorId = actor.id;
+                button.setAttribute("aria-label", `${actor.name}: ${actor.role || actor.kind || "actor"}`);
+
+                const kind = document.createElement("span");
+                kind.className = "actor-kind";
+                kind.textContent = actor.kind || "actor";
+
+                const actorTitle = document.createElement("span");
+                actorTitle.className = "actor-name";
+                actorTitle.textContent = actor.name;
+
+                const role = document.createElement("span");
+                role.className = "actor-role";
+                role.textContent = actor.role || "";
+
+                button.append(kind, actorTitle, role);
+                button.addEventListener("click", () => {
+                  state.selectedActorId = actor.id;
+                  state.selectedArtifactId = null;
+                  state.inspector = "ownership";
+                  renderInspectorTabs();
+                  renderInspector();
+                });
+                stack.append(button);
+              });
+
+            region.append(name, owner, stack);
+            grid.append(region);
+          });
+
+          applyStepToMap();
+        }
+
+        function applyStepToMap() {
+          const step = currentStep();
+          $$(".actor").forEach((node) => {
+            node.classList.remove("is-active", "is-sender", "is-receiver", "is-owner");
+          });
+
+          const sender = step.from ? $(`[data-actor-id="${CSS.escape(step.from)}"]`) : null;
+          const receiver = step.to ? $(`[data-actor-id="${CSS.escape(step.to)}"]`) : null;
+          const ownerId =
+            actors.some((actor) => actor.id === step.owner) ? step.owner : step.actor || null;
+          const owner = ownerId ? $(`[data-actor-id="${CSS.escape(ownerId)}"]`) : null;
+
+          if (state.view === "flow") {
+            if (sender) sender.classList.add("is-active", "is-sender");
+            if (receiver) receiver.classList.add("is-active", "is-receiver");
+            if (!sender && !receiver && owner) owner.classList.add("is-active", "is-owner");
+          } else if (state.view === "ownership") {
+            actors.forEach((actor) => {
+              if (actor.id === ownerId || actor.name === step.owner) {
+                $(`[data-actor-id="${CSS.escape(actor.id)}"]`)?.classList.add("is-active", "is-owner");
+              }
+            });
+          } else if (state.view === "state") {
+            const holders = new Set(
+              asArray(step.artifacts)
+                .map((id) => byId(artifacts, id))
+                .filter(Boolean)
+                .flatMap((artifact) => asArray(artifact.heldBy)),
+            );
+            holders.forEach((id) =>
+              $(`[data-actor-id="${CSS.escape(id)}"]`)?.classList.add("is-active"),
+            );
+          }
+
+          requestAnimationFrame(drawConnection);
+        }
+
+        function drawConnection() {
+          const step = currentStep();
+          const map = $("#map-region");
+          const svg = $("#connection-layer");
+          const line = $("#flow-line");
+          const pulse = $("#flow-pulse");
+          const label = $("#flow-label");
+          const fromNode = step.from ? $(`[data-actor-id="${CSS.escape(step.from)}"]`) : null;
+          const toNode = step.to ? $(`[data-actor-id="${CSS.escape(step.to)}"]`) : null;
+
+          const width = map.clientWidth;
+          const height = map.clientHeight;
+          svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+          if (state.view !== "flow" || !fromNode || !toNode || fromNode === toNode) {
+            line.setAttribute("d", "");
+            pulse.hidden = true;
+            label.hidden = true;
+            return;
+          }
+
+          const mapRect = map.getBoundingClientRect();
+          const fromRect = fromNode.getBoundingClientRect();
+          const toRect = toNode.getBoundingClientRect();
+          const leftToRight = fromRect.left < toRect.left;
+          const startX = (leftToRight ? fromRect.right : fromRect.left) - mapRect.left;
+          const endX = (leftToRight ? toRect.left : toRect.right) - mapRect.left;
+          const startY = fromRect.top + fromRect.height / 2 - mapRect.top;
+          const endY = toRect.top + toRect.height / 2 - mapRect.top;
+          const distance = Math.abs(endX - startX);
+          const bend = Math.max(38, distance * 0.36);
+          const control1 = startX + (leftToRight ? bend : -bend);
+          const control2 = endX + (leftToRight ? -bend : bend);
+          const path = `M ${startX} ${startY} C ${control1} ${startY}, ${control2} ${endY}, ${endX} ${endY}`;
+
+          line.className.baseVal = `flow-line ${step.kind || "request"}`;
+          line.setAttribute("d", path);
+          pulse.hidden = true;
+          const length = line.getTotalLength();
+          if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            line.getAnimations().forEach((animation) => animation.cancel());
+            line.animate(
+              [
+                { strokeDasharray: `0 ${length}`, opacity: 0.4 },
+                { strokeDasharray: `${length} 0`, opacity: 1 },
+              ],
+              { duration: 620, easing: "ease-out" },
+            );
+          }
+
+          const midpoint = line.getPointAtLength(length / 2);
+          label.textContent = step.label || step.title;
+          label.style.left = `${midpoint.x}px`;
+          label.style.top = `${midpoint.y - 17}px`;
+          label.hidden = false;
+        }
+
+        function renderStep() {
+          const scenario = currentScenario();
+          const steps = currentSteps();
+          const step = currentStep();
+          const number = state.stepIndex + 1;
+
+          text($("#scenario-summary"), scenario.summary);
+          text($("#start-cue-text"), `Start here: ${scenario.start || steps[0]?.title || "first step"}`);
+          text($("#progress-text"), `Step ${number} of ${steps.length}`);
+          text($("#step-number"), `Step ${number}`);
+          text($("#step-kind"), step.kind || "step");
+          text($("#step-title"), step.title);
+          text($("#step-what"), step.what);
+          text($("#step-why"), step.why);
+          text(
+            $("#step-owner"),
+            step.owner ? `${actorName(step.owner)}.` : "Responsibility is shared or contextual.",
+          );
+
+          const riskBox = $("#risk-box");
+          const risk = step.risk;
+          riskBox.hidden = !risk;
+          if (risk) {
+            const parts = [risk.trigger, risk.effect, risk.response].filter(Boolean);
+            text($("#risk-text"), parts.join(" "));
+          }
+
+          const transport = $("#transport-badge");
+          transport.hidden = !step.transport;
+          text(transport, step.transport, "");
+
+          $("#previous-step").disabled = state.stepIndex === 0;
+          const last = state.stepIndex === steps.length - 1;
+          $("#next-step").disabled = last;
+          $("#next-step").textContent = last ? "Flow complete" : "Next →";
+          $("#progress-fill").style.width = `${(number / Math.max(steps.length, 1)) * 100}%`;
+
+          renderTradeoffLinks();
+          renderArtifacts();
+          applyStepToMap();
+        }
+
+        function renderTradeoffLinks() {
+          const container = $("#tradeoff-links");
+          container.replaceChildren();
+          asArray(currentStep().tradeoffIds).forEach((id) => {
+            const tradeoff = byId(tradeoffs, id);
+            if (!tradeoff) return;
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "tradeoff-link";
+            button.textContent = `Decision: ${tradeoff.decision}`;
+            button.addEventListener("click", () => {
+              document.getElementById(`tradeoff-${id}`)?.scrollIntoView({ block: "center" });
+            });
+            container.append(button);
+          });
+        }
+
+        function renderArtifacts() {
+          const list = $("#artifact-list");
+          list.replaceChildren();
+          const active = asArray(currentStep().artifacts)
+            .map((id) => byId(artifacts, id))
+            .filter(Boolean);
+          $("#artifact-empty").hidden = active.length > 0;
+
+          active.forEach((artifact) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "artifact-button";
+            button.textContent = `${artifact.name} · ${artifact.kind || "artifact"}`;
+            button.addEventListener("click", () => {
+              state.selectedArtifactId = artifact.id;
+              state.selectedActorId = null;
+              state.inspector = "exchange";
+              renderInspectorTabs();
+              renderInspector();
+            });
+            list.append(button);
+          });
+        }
+
+        function renderInspectorTabs() {
+          $$(".inspector-tab").forEach((button) => {
+            button.setAttribute("aria-selected", String(button.dataset.inspector === state.inspector));
+          });
+        }
+
+        function renderInspector() {
+          const container = $("#inspector-content");
+          container.replaceChildren();
+
+          if (state.inspector === "state") renderStateInspector(container);
+          if (state.inspector === "exchange") renderExchangeInspector(container);
+          if (state.inspector === "ownership") renderOwnershipInspector(container);
+        }
+
+        function renderStateInspector(container) {
+          const step = currentStep();
+          const grid = document.createElement("div");
+          grid.className = "state-grid";
+          const before = createPanel("Before this step", "state-before");
+          const after = createPanel("After this step", "state-after");
+          before.append(createList(step.stateBefore, "state-list", "No relevant state is established yet."));
+          after.append(createList(step.stateAfter, "state-list", "No material state change."));
+          grid.append(before, after);
+          container.append(grid);
+        }
+
+        function renderExchangeInspector(container) {
+          if (state.selectedArtifactId) {
+            const artifact = byId(artifacts, state.selectedArtifactId);
+            if (artifact) {
+              const detail = document.createElement("article");
+              detail.className = "artifact-detail";
+              const title = document.createElement("h3");
+              title.textContent = artifact.name;
+              const description = document.createElement("p");
+              description.textContent = artifact.description || artifact.kind || "";
+              detail.append(title, description);
+
+              const grid = document.createElement("div");
+              grid.className = "inspect-grid";
+              [
+                ["Created by", actorName(artifact.createdBy)],
+                ["Held by", asArray(artifact.heldBy).map(actorName).join(", ") || "Not specified"],
+                ["Validated by", asArray(artifact.validatedBy).map(actorName).join(", ") || "Not specified"],
+                ["Lifetime", artifact.lifetime || "Not specified"],
+                ["Sensitivity", artifact.sensitivity || "Not specified"],
+                ["Representative form", artifact.representation || "Not shown"],
+              ].forEach(([heading, value]) => {
+                const panel = createPanel(heading);
+                const pre = document.createElement("pre");
+                pre.textContent = value;
+                panel.append(pre);
+                grid.append(panel);
+              });
+              detail.append(grid);
+              container.append(detail);
+              return;
+            }
+          }
+
+          const inspect = currentStep().inspect || {};
+          const entries = Object.entries(inspect);
+          if (!entries.length) {
+            const note = document.createElement("p");
+            note.className = "empty-note";
+            note.textContent = "No protocol-level exchange is needed to understand this step.";
+            container.append(note);
+            return;
+          }
+
+          const grid = document.createElement("div");
+          grid.className = "inspect-grid";
+          entries.forEach(([key, value]) => {
+            const panel = createPanel(key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase()));
+            const pre = document.createElement("pre");
+            pre.textContent = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+            panel.append(pre);
+            grid.append(panel);
+          });
+          container.append(grid);
+        }
+
+        function renderOwnershipInspector(container) {
+          const selected =
+            byId(actors, state.selectedActorId) ||
+            byId(actors, currentStep().from) ||
+            byId(actors, currentStep().to);
+
+          if (!selected) {
+            const note = document.createElement("p");
+            note.className = "empty-note";
+            note.textContent = `Step owner: ${currentStep().owner || "shared or contextual"}.`;
+            container.append(note);
+            return;
+          }
+
+          const detail = document.createElement("article");
+          detail.className = "actor-detail";
+          const title = document.createElement("h3");
+          title.textContent = selected.name;
+          const role = document.createElement("p");
+          role.textContent = selected.role || "";
+          detail.append(title, role);
+
+          const grid = document.createElement("div");
+          grid.className = "inspect-grid";
+          const owns = createPanel("Responsible for");
+          owns.append(createList(selected.responsibilities, "responsibility-list", "No responsibilities listed."));
+          const notOwn = createPanel("Does not own");
+          notOwn.append(createList(selected.doesNotOwn, "responsibility-list", "No explicit exclusion listed."));
+          grid.append(owns, notOwn);
+          detail.append(grid);
+          container.append(detail);
+        }
+
+        function makeConceptCard(title, className = "") {
+          const card = document.createElement("article");
+          card.className = `concept-card ${className}`.trim();
+          const heading = document.createElement("h3");
+          heading.textContent = title;
+          card.append(heading);
+          return card;
+        }
+
+        function addLabeledText(card, label, value, className = "") {
+          if (!value) return;
+          const paragraph = document.createElement("p");
+          paragraph.className = className;
+          const strong = document.createElement("strong");
+          strong.textContent = `${label}: `;
+          paragraph.append(strong, document.createTextNode(value));
+          card.append(paragraph);
+        }
+
+        function renderDeepDive() {
+          renderVariants();
+          renderFailures();
+          renderTradeoffs();
+          renderRecall();
+          renderReference();
+        }
+
+        function renderVariants() {
+          const variants = lesson.variants || [];
+          const section = $("#variants-section");
+          section.hidden = variants.length === 0;
+          const grid = $("#variant-grid");
+          grid.replaceChildren();
+          variants.forEach((variant) => {
+            const card = makeConceptCard(variant.name);
+            addLabeledText(card, "Changed constraint", variant.constraint, "constraint");
+            addLabeledText(card, "What changes", asArray(variant.changes).join(" "));
+            addLabeledText(card, "What it gains", asArray(variant.benefits).join(" "));
+            addLabeledText(card, "What it costs", asArray(variant.costs).join(" "));
+            addLabeledText(card, "Must remain true", asArray(variant.assumptions).join(" "));
+            grid.append(card);
+          });
+        }
+
+        function renderFailures() {
+          const failures = lesson.failures || [];
+          const section = $("#failures-section");
+          section.hidden = failures.length === 0;
+          const grid = $("#failure-grid");
+          grid.replaceChildren();
+          failures.forEach((failure) => {
+            const card = makeConceptCard(failure.name, "failure-card");
+            const scenario = byId(scenarios, failure.scenarioId);
+            const location = [
+              scenario?.name,
+              failure.atStep ? `step ${failure.atStep}` : null,
+            ].filter(Boolean).join(", ");
+            addLabeledText(card, "Appears at", location);
+            addLabeledText(card, "Trigger", failure.trigger);
+            addLabeledText(card, "Detected by", actorName(failure.detectedBy));
+            addLabeledText(card, "Visible effect", failure.effect);
+            addLabeledText(card, "Recovery", failure.recovery);
+            addLabeledText(card, "Prevention", failure.prevention);
+            grid.append(card);
+          });
+        }
+
+        function renderTradeoffs() {
+          const section = $("#tradeoffs-section");
+          section.hidden = tradeoffs.length === 0;
+          const grid = $("#tradeoff-grid");
+          grid.replaceChildren();
+          tradeoffs.forEach((tradeoff) => {
+            const card = makeConceptCard(tradeoff.decision);
+            card.id = `tradeoff-${tradeoff.id}`;
+            addLabeledText(card, "Constraint", tradeoff.context, "constraint");
+
+            const optionGrid = document.createElement("div");
+            optionGrid.className = "option-grid";
+            asArray(tradeoff.options).forEach((option) => {
+              const optionCard = document.createElement("div");
+              optionCard.className = "option";
+              const title = document.createElement("h4");
+              title.textContent = option.name;
+              optionCard.append(title);
+              addLabeledText(optionCard, "Gain", asArray(option.benefits).join(" "), "gain");
+              addLabeledText(optionCard, "Cost", asArray(option.costs).join(" "), "cost");
+              addLabeledText(optionCard, "Choose when", option.chooseWhen);
+              addLabeledText(optionCard, "Invalid when", option.invalidWhen);
+              optionGrid.append(optionCard);
+            });
+            card.append(optionGrid);
+            grid.append(card);
+          });
+        }
+
+        function renderRecall() {
+          const checkpoints = lesson.checkpoints || [];
+          const section = $("#recall-section");
+          section.hidden = checkpoints.length === 0;
+          const grid = $("#recall-grid");
+          grid.replaceChildren();
+          checkpoints.forEach((checkpoint, index) => {
+            const details = document.createElement("details");
+            details.className = "recall";
+            const summary = document.createElement("summary");
+            summary.textContent = `${index + 1}. ${checkpoint.question}`;
+            const answer = document.createElement("p");
+            answer.textContent = checkpoint.answer;
+            details.append(summary, answer);
+            grid.append(details);
+          });
+        }
+
+        function renderReference() {
+          const glossary = $("#glossary-list");
+          glossary.replaceChildren();
+          asArray(lesson.glossary).forEach((entry) => {
+            const wrapper = document.createElement("div");
+            const term = document.createElement("dt");
+            term.textContent = entry.term;
+            const definition = document.createElement("dd");
+            definition.textContent = entry.definition;
+            wrapper.append(term, definition);
+            glossary.append(wrapper);
+          });
+          if (!lesson.glossary?.length) {
+            const wrapper = document.createElement("div");
+            const definition = document.createElement("dd");
+            definition.textContent = "No specialized terms need defining.";
+            wrapper.append(definition);
+            glossary.append(wrapper);
+          }
+
+          const simplifications = $("#simplification-list");
+          simplifications.replaceChildren();
+          appendList(
+            simplifications,
+            lesson.simplifications,
+            "No material conceptual simplifications are declared.",
+          );
+
+          const sources = $("#source-list");
+          sources.replaceChildren();
+          asArray(lesson.sources).forEach((source) => {
+            const item = document.createElement("li");
+            const url = safeSourceUrl(source.url);
+            if (url) {
+              const link = document.createElement("a");
+              link.href = url;
+              link.textContent = source.title;
+              link.target = "_blank";
+              link.rel = "noreferrer";
+              item.append(link);
+            } else {
+              item.append(document.createTextNode(source.title));
+            }
+            if (source.kind) item.append(document.createTextNode(` — ${source.kind}`));
+            sources.append(item);
+          });
+          if (!lesson.sources?.length) appendList(sources, [], "No external source was required.");
+        }
+
+        function changeStep(delta) {
+          const next = Math.max(0, Math.min(currentSteps().length - 1, state.stepIndex + delta));
+          if (next === state.stepIndex) return;
+          state.stepIndex = next;
+          state.selectedActorId = null;
+          state.selectedArtifactId = null;
+          renderStep();
+          renderInspector();
+        }
+
+        function stopPlaying() {
+          if (state.playTimer) window.clearInterval(state.playTimer);
+          state.playTimer = null;
+          const button = $("#play-flow");
+          button.setAttribute("aria-pressed", "false");
+          button.textContent = "▶ Play flow";
+        }
+
+        function togglePlaying() {
+          if (state.playTimer) {
+            stopPlaying();
+            return;
+          }
+          if (state.stepIndex === currentSteps().length - 1) state.stepIndex = 0;
+          const button = $("#play-flow");
+          button.setAttribute("aria-pressed", "true");
+          button.textContent = "Ⅱ Pause";
+          renderStep();
+          renderInspector();
+          state.playTimer = window.setInterval(() => {
+            if (state.stepIndex >= currentSteps().length - 1) {
+              stopPlaying();
+              return;
+            }
+            changeStep(1);
+          }, 2600);
+        }
+
+        function renderLesson() {
+          renderScenarioTabs();
+          renderMap();
+          renderStep();
+          renderInspectorTabs();
+          renderInspector();
+        }
+
+        $("#previous-step").addEventListener("click", () => {
+          stopPlaying();
+          changeStep(-1);
+        });
+        $("#next-step").addEventListener("click", () => {
+          stopPlaying();
+          changeStep(1);
+        });
+        $("#restart-flow").addEventListener("click", () => {
+          stopPlaying();
+          state.stepIndex = 0;
+          state.selectedActorId = null;
+          state.selectedArtifactId = null;
+          renderStep();
+          renderInspector();
+        });
+        $("#play-flow").addEventListener("click", togglePlaying);
+
+        $$(".view-button").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.view = button.dataset.view;
+            $$(".view-button").forEach((candidate) =>
+              candidate.setAttribute("aria-pressed", String(candidate === button)),
+            );
+            applyStepToMap();
+            if (state.view === "state") state.inspector = "state";
+            if (state.view === "ownership") state.inspector = "ownership";
+            renderInspectorTabs();
+            renderInspector();
+          });
+        });
+
+        $$(".inspector-tab").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.inspector = button.dataset.inspector;
+            state.selectedActorId = null;
+            state.selectedArtifactId = null;
+            renderInspectorTabs();
+            renderInspector();
+          });
+        });
+
+        window.addEventListener("resize", () => requestAnimationFrame(drawConnection));
+        window.addEventListener("beforeunload", stopPlaying);
+
+        renderHeader();
+        renderLesson();
+        renderDeepDive();
+      })();
+    </script>
+  </body>
+</html>
