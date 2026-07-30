@@ -1,0 +1,1244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Grow an OpenAPI spec — interactive lesson</title>
+    <style>
+      :root {
+        --page: #f3f1eb;
+        --surface: #fffdfa;
+        --surface-2: #f3f0e8;
+        --ink: #18201f;
+        --muted: #65706c;
+        --line: #cbc7bd;
+        --accent: #086b5d;
+        --accent-strong: #064c43;
+        --accent-soft: #d9eee8;
+        --blue: #275f9a;
+        --blue-soft: #e2edf8;
+        --purple: #7050a0;
+        --purple-soft: #eee6f7;
+        --amber: #8b570d;
+        --amber-soft: #fff0c9;
+        --red: #a43e34;
+        --red-soft: #fbe5e0;
+        --green: #27714e;
+        --green-soft: #dff1e7;
+        --code: #111917;
+        --code-ink: #e7f1ed;
+        --code-muted: #879b93;
+        --added: rgba(97, 210, 157, 0.14);
+        --shadow: 0 18px 52px rgba(35, 45, 41, 0.1);
+        font-family:
+          Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --page: #101715;
+          --surface: #17211e;
+          --surface-2: #1e2a26;
+          --ink: #edf3f0;
+          --muted: #acb8b3;
+          --line: #3c4a45;
+          --accent: #70d3bd;
+          --accent-strong: #9be5d3;
+          --accent-soft: #173f36;
+          --blue: #8fc1ee;
+          --blue-soft: #203c54;
+          --purple: #c4a6ec;
+          --purple-soft: #392d4b;
+          --amber: #f1c16c;
+          --amber-soft: #49391d;
+          --red: #ff9c91;
+          --red-soft: #4b2927;
+          --green: #7bd5a3;
+          --green-soft: #1f4432;
+          --code: #09100e;
+          --shadow: 0 18px 52px rgba(0, 0, 0, 0.3);
+        }
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        min-width: 320px;
+        margin: 0;
+        overflow-x: hidden;
+        background:
+          radial-gradient(circle at 7% -8%, var(--accent-soft), transparent 32rem),
+          var(--page);
+        color: var(--ink);
+      }
+      body, button { font: inherit; }
+      button { color: inherit; }
+      button, a { -webkit-tap-highlight-color: transparent; }
+      button:focus-visible, a:focus-visible, summary:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+      a { color: var(--accent-strong); }
+      code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+
+      .page {
+        width: 100%;
+        min-height: 100vh;
+        padding: clamp(12px, 2vw, 26px);
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.5fr);
+        gap: clamp(22px, 4vw, 60px);
+        align-items: end;
+        margin-bottom: 24px;
+      }
+      .eyebrow, .micro {
+        color: var(--accent);
+        font-size: .7rem;
+        font-weight: 850;
+        letter-spacing: .13em;
+        text-transform: uppercase;
+      }
+      .eyebrow { margin: 0 0 9px; }
+      h1 {
+        max-width: 15ch;
+        margin: 0;
+        font-size: clamp(2.5rem, 6.5vw, 6.2rem);
+        letter-spacing: -.065em;
+        line-height: .92;
+      }
+      .hero-copy {
+        max-width: 70ch;
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: clamp(1rem, 1.5vw, 1.22rem);
+        line-height: 1.55;
+      }
+      .thesis {
+        border-left: 4px solid var(--accent);
+        border-radius: 0 12px 12px 0;
+        background: color-mix(in srgb, var(--surface) 82%, transparent);
+        padding: 15px 17px;
+      }
+      .thesis p { margin: 6px 0 0; line-height: 1.5; }
+
+      .stage-nav {
+        position: sticky;
+        z-index: 10;
+        top: 0;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 7px;
+        margin-bottom: 13px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: color-mix(in srgb, var(--surface) 92%, transparent);
+        box-shadow: 0 8px 28px rgba(20, 34, 29, .08);
+        padding: 7px;
+        backdrop-filter: blur(15px);
+      }
+      .stage-button {
+        display: grid;
+        grid-template-columns: 29px 1fr;
+        gap: 8px;
+        align-items: center;
+        min-width: 0;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: transparent;
+        cursor: pointer;
+        padding: 9px;
+        text-align: left;
+      }
+      .stage-button:hover { border-color: var(--line); background: var(--surface-2); }
+      .stage-button[aria-selected="true"] {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+      }
+      .stage-number {
+        display: grid;
+        width: 29px;
+        height: 29px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        color: var(--muted);
+        font-size: .72rem;
+        font-weight: 850;
+      }
+      .stage-button[aria-selected="true"] .stage-number {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: var(--surface);
+      }
+      .stage-label { min-width: 0; font-size: .8rem; font-weight: 800; line-height: 1.2; }
+
+      .workspace, .section-card {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+      .workspace { overflow: hidden; }
+      .stage-intro {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, .5fr);
+        gap: 20px;
+        align-items: end;
+        border-bottom: 1px solid var(--line);
+        padding: clamp(18px, 2.5vw, 28px);
+      }
+      .stage-intro h2 {
+        margin: 5px 0 7px;
+        font-size: clamp(1.6rem, 3.4vw, 3.15rem);
+        letter-spacing: -.045em;
+      }
+      .stage-intro p { max-width: 74ch; margin: 0; color: var(--muted); line-height: 1.52; }
+      .pressure {
+        border-left: 3px solid var(--amber);
+        background: var(--amber-soft);
+        padding: 11px 13px;
+        font-size: .84rem;
+        line-height: 1.45;
+      }
+
+      .flows {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-bottom: 1px solid var(--line);
+      }
+      .flow-panel { min-width: 0; padding: 18px; }
+      .flow-panel + .flow-panel { border-left: 1px solid var(--line); }
+      .flow-head {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 11px;
+      }
+      .flow-head h3 { margin: 0; font-size: .95rem; }
+      .flow-head span { color: var(--muted); font-size: .72rem; }
+      .flow-track {
+        display: flex;
+        min-height: 105px;
+        overflow-x: auto;
+        gap: 6px;
+        align-items: stretch;
+        padding: 3px 1px 7px;
+        scrollbar-width: thin;
+      }
+      .flow-node {
+        display: flex;
+        min-width: 118px;
+        flex: 1 0 118px;
+        flex-direction: column;
+        justify-content: center;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        background: var(--surface-2);
+        padding: 11px;
+      }
+      .flow-node.contract { border-color: var(--purple); background: var(--purple-soft); }
+      .flow-node.runtime { border-color: var(--blue); background: var(--blue-soft); }
+      .flow-node.central { border-color: var(--accent); background: var(--accent-soft); }
+      .flow-node strong { font-size: .79rem; line-height: 1.25; }
+      .flow-node small { margin-top: 4px; color: var(--muted); font-size: .65rem; line-height: 1.35; }
+      .flow-arrow {
+        display: flex;
+        min-width: 60px;
+        flex: 0 0 60px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        font-size: .61rem;
+        text-align: center;
+      }
+      .flow-arrow::after { content: "→"; margin-top: 3px; color: var(--accent); font-size: 1.45rem; }
+
+      .builder {
+        display: grid;
+        grid-template-columns: minmax(205px, .43fr) minmax(0, 1.25fr) minmax(250px, .55fr);
+        min-height: 640px;
+      }
+      .files, .changes {
+        min-width: 0;
+        background: var(--surface-2);
+        padding: 18px;
+      }
+      .files { border-right: 1px solid var(--line); }
+      .changes { border-left: 1px solid var(--line); }
+      .files h3, .changes h3 { margin: 6px 0 11px; font-size: .96rem; }
+      .file-tree { display: grid; gap: 5px; }
+      .file-button {
+        width: 100%;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: transparent;
+        cursor: pointer;
+        padding: 8px 9px;
+        text-align: left;
+      }
+      .file-button:hover { border-color: var(--line); background: var(--surface); }
+      .file-button[aria-selected="true"] {
+        border-color: var(--accent);
+        background: var(--surface);
+        color: var(--accent-strong);
+      }
+      .file-path {
+        display: block;
+        overflow: hidden;
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: .72rem;
+        font-weight: 720;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .file-owner { display: block; margin-top: 3px; color: var(--muted); font-size: .64rem; }
+      .meta { display: grid; gap: 10px; margin-top: 17px; border-top: 1px solid var(--line); padding-top: 13px; }
+      .meta dt { color: var(--muted); font-size: .64rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+      .meta dd { margin: 3px 0 0; font-size: .75rem; line-height: 1.4; }
+
+      .code-panel { min-width: 0; background: var(--code); color: var(--code-ink); }
+      .code-toolbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255,255,255,.12);
+        padding: 12px 14px;
+      }
+      .current-file {
+        overflow: hidden;
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: .72rem;
+        font-weight: 730;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .copy {
+        flex: 0 0 auto;
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 7px;
+        background: transparent;
+        color: var(--code-ink);
+        cursor: pointer;
+        font-size: .68rem;
+        padding: 6px 8px;
+      }
+      .code-scroll { height: 590px; overflow: auto; padding: 10px 0 20px; }
+      pre { margin: 0; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+      .code-lines { display: block; min-width: max-content; font-size: clamp(.69rem, 1vw, .8rem); line-height: 1.58; }
+      .code-line { display: grid; grid-template-columns: 39px minmax(0, 1fr); padding-right: 16px; }
+      .code-line.new { background: var(--added); }
+      .line-no { padding-right: 10px; color: var(--code-muted); font-size: .66rem; text-align: right; user-select: none; }
+      .line-text { white-space: pre; }
+      .change-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+      .change-list li {
+        border-left: 3px solid var(--accent);
+        background: var(--surface);
+        padding: 9px 10px;
+        font-size: .76rem;
+        line-height: 1.43;
+      }
+      .change-list code, .summary code, .card-grid code {
+        border-radius: 4px;
+        background: color-mix(in srgb, var(--line) 55%, transparent);
+        padding: 1px 4px;
+        font-size: .9em;
+      }
+      .rule { margin-top: 14px; border: 1px solid var(--amber); border-radius: 10px; background: var(--amber-soft); padding: 11px; }
+      .rule strong { display: block; margin-bottom: 4px; font-size: .74rem; }
+      .rule p { margin: 0; font-size: .74rem; line-height: 1.43; }
+
+      .lab { border-top: 1px solid var(--line); padding: clamp(18px, 2.5vw, 28px); }
+      .section-head { display: flex; gap: 18px; align-items: end; justify-content: space-between; margin-bottom: 14px; }
+      .section-head h2, .section-head h3 { margin: 5px 0 0; letter-spacing: -.03em; }
+      .section-head p { max-width: 58ch; margin: 0; color: var(--muted); line-height: 1.48; }
+      .outcome-tabs { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 11px; }
+      .outcome {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: transparent;
+        cursor: pointer;
+        font-size: .75rem;
+        font-weight: 800;
+        padding: 7px 11px;
+      }
+      .outcome[aria-selected="true"][data-outcome="success"] { border-color: var(--green); background: var(--green-soft); color: var(--green); }
+      .outcome[aria-selected="true"][data-outcome="error"] { border-color: var(--amber); background: var(--amber-soft); color: var(--amber); }
+      .outcome[aria-selected="true"][data-outcome="failure"] { border-color: var(--red); background: var(--red-soft); color: var(--red); }
+      .outcome-grid { display: grid; grid-template-columns: minmax(0,.75fr) minmax(0,1fr) minmax(230px,.55fr); gap: 10px; }
+      .message, .consequence { min-width: 0; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-2); padding: 12px; }
+      .message h4, .consequence h4 { margin: 0 0 8px; font-size: .76rem; }
+      .message pre { overflow-x: auto; color: var(--muted); font-size: .71rem; line-height: 1.52; white-space: pre-wrap; }
+      .consequence dl { display: grid; gap: 9px; margin: 0; }
+      .consequence dt { color: var(--muted); font-size: .62rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+      .consequence dd { margin: 3px 0 0; font-size: .74rem; line-height: 1.4; }
+
+      .below { display: grid; gap: 18px; margin-top: 20px; }
+      .section-card { padding: clamp(18px, 3vw, 31px); }
+      .table-scroll { overflow-x: auto; }
+      .summary { width: 100%; min-width: 830px; border-collapse: collapse; font-size: .78rem; }
+      .summary th, .summary td { border-bottom: 1px solid var(--line); padding: 11px; line-height: 1.42; text-align: left; vertical-align: top; }
+      .summary th { color: var(--muted); font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; }
+      .summary tbody th { color: var(--ink); font-size: .74rem; letter-spacing: 0; text-transform: none; }
+      .card-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,260px),1fr)); gap: 10px; }
+      .mini-card { border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); padding: 13px; }
+      .mini-card h3 { margin: 0 0 6px; font-size: .9rem; }
+      .mini-card p { margin: 5px 0; color: var(--muted); font-size: .76rem; line-height: 1.46; }
+      .gain { color: var(--green) !important; }
+      .cost { color: var(--red) !important; }
+      details { border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); padding: 0 13px; }
+      details + details { margin-top: 7px; }
+      summary { cursor: pointer; font-weight: 760; line-height: 1.4; padding: 12px 0; }
+      details p { border-top: 1px solid var(--line); margin: 0; color: var(--muted); line-height: 1.48; padding: 11px 0 13px; }
+      .sources { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,250px),1fr)); gap: 7px 20px; margin: 0; padding-left: 19px; }
+      .sources li { color: var(--muted); font-size: .75rem; line-height: 1.42; }
+
+      @media (max-width: 1080px) {
+        .builder { grid-template-columns: 220px minmax(0,1fr); }
+        .changes { grid-column: 1/-1; border-top: 1px solid var(--line); border-left: 0; }
+        .change-list { grid-template-columns: repeat(3,minmax(0,1fr)); }
+      }
+      @media (max-width: 800px) {
+        .hero, .stage-intro, .flows, .outcome-grid { grid-template-columns: 1fr; }
+        .stage-nav { position: static; grid-template-columns: repeat(2,minmax(0,1fr)); }
+        .flow-panel + .flow-panel { border-top: 1px solid var(--line); border-left: 0; }
+        .builder { grid-template-columns: 1fr; }
+        .files { border-right: 0; border-bottom: 1px solid var(--line); }
+        .changes { grid-column: auto; }
+        .change-list { grid-template-columns: 1fr; }
+        .section-head { align-items: flex-start; flex-direction: column; }
+      }
+      @media (max-width: 500px) {
+        .page { padding: 7px; }
+        .stage-nav { grid-template-columns: 1fr; }
+        .stage-intro, .flow-panel, .files, .changes, .lab, .section-card { padding: 14px; }
+        .code-scroll { height: 520px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .001ms !important; animation-duration: .001ms !important; }
+      }
+      @media print {
+        body { background: white; color: black; }
+        .page { padding: 0; }
+        .stage-nav, .copy, .outcome-tabs { display: none; }
+        .workspace, .section-card { break-inside: avoid; box-shadow: none; }
+        .code-scroll { height: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">One example · four design pressures</p>
+          <h1>Grow an OpenAPI spec</h1>
+          <p class="hero-copy">
+            Follow one Bookstore API from a single route beside one server to
+            independently owned service contracts published through a central registry.
+            The YAML changes because the architecture changes.
+          </p>
+        </div>
+        <aside class="thesis">
+          <span class="micro">The mental model</span>
+          <p>
+            OpenAPI is a versioned description of HTTP promises. People and tools read
+            it; JSON still crosses the network at runtime.
+          </p>
+        </aside>
+      </header>
+
+      <nav class="stage-nav" id="stage-nav" role="tablist" aria-label="Evolution stages"></nav>
+
+      <section class="workspace">
+        <header class="stage-intro">
+          <div>
+            <span class="micro" id="kicker"></span>
+            <h2 id="title"></h2>
+            <p id="summary"></p>
+          </div>
+          <div class="pressure" id="pressure"></div>
+        </header>
+
+        <div class="flows">
+          <section class="flow-panel">
+            <div class="flow-head"><h3>Contract flow</h3><span>build time</span></div>
+            <div class="flow-track" id="contract-flow"></div>
+          </section>
+          <section class="flow-panel">
+            <div class="flow-head"><h3>HTTP flow</h3><span>runtime</span></div>
+            <div class="flow-track" id="runtime-flow"></div>
+          </section>
+        </div>
+
+        <div class="builder">
+          <aside class="files">
+            <span class="micro">Where it lives</span>
+            <h3>Files in this design</h3>
+            <div class="file-tree" id="file-tree" role="tablist" aria-label="Example files"></div>
+            <dl class="meta">
+              <div><dt>Source of truth</dt><dd id="source"></dd></div>
+              <div><dt>Owner</dt><dd id="owner"></dd></div>
+              <div><dt>Used by</dt><dd id="used-by"></dd></div>
+            </dl>
+          </aside>
+
+          <section class="code-panel">
+            <div class="code-toolbar">
+              <span class="current-file" id="current-file"></span>
+              <button class="copy" id="copy" type="button">Copy file</button>
+            </div>
+            <div class="code-scroll"><pre><code class="code-lines" id="code-lines"></code></pre></div>
+          </section>
+
+          <aside class="changes">
+            <span class="micro">Why it changed</span>
+            <h3>New in this stage</h3>
+            <ul class="change-list" id="change-list"></ul>
+            <div class="rule"><strong>Keep this rule</strong><p id="rule"></p></div>
+          </aside>
+        </div>
+
+        <section class="lab">
+          <div class="section-head">
+            <div><span class="micro">Run the example</span><h3>One operation, three outcomes</h3></div>
+            <p>
+              These are alternative branches. OpenAPI tells the server what it may
+              produce and the client what it must handle.
+            </p>
+          </div>
+          <div class="outcome-tabs" role="tablist" aria-label="Response outcomes">
+            <button class="outcome" type="button" data-outcome="success">Success</button>
+            <button class="outcome" type="button" data-outcome="error">Expected error</button>
+            <button class="outcome" type="button" data-outcome="failure">Server failure</button>
+          </div>
+          <div class="outcome-grid">
+            <article class="message"><h4>Request</h4><pre id="request"></pre></article>
+            <article class="message"><h4 id="response-title">Response</h4><pre id="response"></pre></article>
+            <article class="consequence">
+              <h4>Contract consequence</h4>
+              <dl>
+                <div><dt>Spec points to</dt><dd id="pointer"></dd></div>
+                <div><dt>Server must</dt><dd id="server"></dd></div>
+                <div><dt>Client should</dt><dd id="client"></dd></div>
+              </dl>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <div class="below">
+        <section class="section-card">
+          <div class="section-head">
+            <div><span class="micro">The whole evolution</span><h2>What “centralised” means</h2></div>
+            <p>
+              Centralise discovery, validation, publication, and deliberately shared
+              models. That does not require one team to own every endpoint.
+            </p>
+          </div>
+          <div class="table-scroll">
+            <table class="summary">
+              <thead><tr><th>Scale</th><th>Authoring source</th><th>Reuse</th><th>Publication</th><th>Central means</th></tr></thead>
+              <tbody>
+                <tr>
+                  <th>1 endpoint · 1 server</th>
+                  <td><code>catalog/openapi.yaml</code> beside code</td>
+                  <td>Inline schemas</td>
+                  <td>Optional local artifact</td>
+                  <td>The one file is the contract</td>
+                </tr>
+                <tr>
+                  <th>Many endpoints · 1 server</th>
+                  <td>One service-owned description</td>
+                  <td>Local <code>components</code> and <code>$ref</code></td>
+                  <td>One versioned service bundle</td>
+                  <td>Models are central inside the service</td>
+                </tr>
+                <tr>
+                  <th>Many endpoints · many servers</th>
+                  <td>One description per service</td>
+                  <td>Pinned shared package + local models</td>
+                  <td>Registry indexes immutable releases</td>
+                  <td>Distribution is central; operation ownership stays local</td>
+                </tr>
+                <tr>
+                  <th>Organisation-wide</th>
+                  <td>Service repos feed one contract pipeline</td>
+                  <td>Only stable cross-service vocabulary is global</td>
+                  <td>Bundles feed docs, SDKs, tests, mocks, and gateways</td>
+                  <td>The registry is a hub, not necessarily the edit location</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-head">
+            <div><span class="micro">Tradeoffs</span><h2>Three choices that matter</h2></div>
+            <p>Choose according to ownership and release constraints.</p>
+          </div>
+          <div class="card-grid">
+            <article class="mini-card">
+              <h3>Design-first vs code-first</h3>
+              <p class="gain">Design-first enables early review, mocks, and parallel client work.</p>
+              <p class="cost">It needs conformance tests to stop YAML and code drifting.</p>
+              <p>Generated code-first output still needs review as a public contract.</p>
+            </article>
+            <article class="mini-card">
+              <h3>Local vs shared schemas</h3>
+              <p class="gain">Local components are simple and evolve with one server.</p>
+              <p class="cost">Cross-server sharing adds owners, versions, and support windows.</p>
+              <p>Share meaning—not ORM entities that happen to look alike.</p>
+            </article>
+            <article class="mini-card">
+              <h3>Monorepo vs registry</h3>
+              <p class="gain">A monorepo makes atomic edits and relative refs easy.</p>
+              <p class="cost">A registry costs more but gives independent repos immutable pins.</p>
+              <p>Both can publish the same consumer-facing bundle.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="section-head">
+            <div><span class="micro">Check the model</span><h2>Predict the next design</h2></div>
+            <p>Answer before opening.</p>
+          </div>
+          <details>
+            <summary>A second route needs the same Book response. What changes?</summary>
+            <p>Move Book into <code>components.schemas.Book</code> and reference it from both operations. It remains local to the single server.</p>
+          </details>
+          <details>
+            <summary>Reviews becomes a separate server. Should it import Catalog’s full Book model?</summary>
+            <p>Usually no. Publish a deliberately small BookSummary only if both services truly share its semantics. Keep richer models local.</p>
+          </details>
+          <details>
+            <summary>What crosses the network at runtime: the OpenAPI file or Book JSON?</summary>
+            <p>Book JSON. The OpenAPI description is normally consumed by humans and tools before or around runtime.</p>
+          </details>
+          <details>
+            <summary>Does a central registry make one team the owner of all operations?</summary>
+            <p>No. It can centralise discovery and distribution while service teams keep operation ownership. Shared models need an explicit owner.</p>
+          </details>
+        </section>
+
+        <footer class="section-card">
+          <div class="section-head">
+            <div><span class="micro">Primary references</span><h2>Sources</h2></div>
+            <p>Examples use OpenAPI 3.1 syntax; the latest published version at creation is 3.2.0. Tool support varies.</p>
+          </div>
+          <ul class="sources">
+            <li><a href="https://spec.openapis.org/oas/v3.2.0.html">OpenAPI Specification 3.2.0</a></li>
+            <li><a href="https://spec.openapis.org/oas/v3.1.1.html">OpenAPI Specification 3.1.1</a></li>
+            <li><a href="https://www.rfc-editor.org/rfc/rfc9457">RFC 9457: Problem Details</a></li>
+            <li><a href="https://docs.github.com/en/rest/about-the-rest-api/about-the-openapi-description-for-the-rest-api">GitHub REST OpenAPI description</a></li>
+            <li><a href="https://github.com/Azure/azure-rest-api-specs">Azure REST API specs</a></li>
+            <li><a href="https://kubernetes.io/docs/concepts/overview/kubernetes-api/">Kubernetes API discovery</a></li>
+            <li><a href="https://github.com/stripe/openapi">Stripe OpenAPI repository</a></li>
+            <li><a href="https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html">AWS API Gateway import</a></li>
+            <li><a href="https://cloud.google.com/endpoints/docs/openapi">Google Cloud Endpoints</a></li>
+          </ul>
+        </footer>
+      </div>
+    </main>
+
+    <script>
+      (() => {
+        "use strict";
+
+        const stages = [
+          {
+            nav: "One endpoint · one server",
+            kicker: "Stage 1 · smallest useful contract",
+            title: "Put one HTTP promise beside the server",
+            summary: "Catalog exposes GET /books/{bookId}. One openapi.yaml describes the request and every response branch. Inline schemas keep the first example readable.",
+            pressure: "Pressure: a client needs to call one route without reading the server’s source.",
+            source: "services/catalog/openapi.yaml",
+            owner: "Catalog team",
+            usedBy: "Developer, local docs, contract tests, client team",
+            contractFlow: [
+              ["Catalog developer", "authors the promise", ""],
+              ["catalog/openapi.yaml", "one description", "contract"],
+              ["Docs + tests", "read that file", ""]
+            ],
+            runtimeFlow: [
+              ["Client", "builds GET request", ""],
+              ["Catalog server", "implements route", "runtime"],
+              ["200 / 404 / 500", "one branch", ""]
+            ],
+            files: [{
+              path: "services/catalog/openapi.yaml",
+              owner: "Catalog team · source",
+              highlight: [1, 7, 9, 16, 27, 38],
+              code: `openapi: 3.1.0
+info:
+  title: Bookstore Catalog API
+  version: 1.0.0
+servers:
+  - url: https://api.example.test
+paths:
+  /books/{bookId}:
+    get:
+      operationId: getBook
+      parameters:
+        - in: path
+          name: bookId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Book found
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, title]
+                properties:
+                  id: { type: string }
+                  title: { type: string }
+        '404':
+          description: Book not found
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                required: [type, title, status]
+                properties:
+                  type: { type: string, format: uri }
+                  title: { type: string }
+                  status: { type: integer }
+        '500':
+          description: Unexpected server failure
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                required: [type, title, status]
+                properties:
+                  type: { type: string, format: uri }
+                  title: { type: string }
+                  status: { type: integer }`
+            }],
+            changes: [
+              "The <code>paths</code> tree names the public URL and HTTP method.",
+              "Each item under <code>responses</code> is an alternative branch.",
+              "Inline schemas are reasonable while there is one use and one owner."
+            ],
+            rule: "Describe observable HTTP behavior—not private functions, SQL tables, or deployment internals.",
+            outcomes: {
+              success: ["GET /books/bk_123\nAccept: application/json", "200 · Book found", "HTTP/1.1 200 OK\nContent-Type: application/json\n\n{ \"id\": \"bk_123\", \"title\": \"A Wizard of Earthsea\" }", "paths./books/{bookId}.get.responses.200", "Return JSON matching the 200 schema.", "Deserialize Book and continue."],
+              error: ["GET /books/bk_missing\nAccept: application/json", "404 · Expected error", "HTTP/1.1 404 Not Found\nContent-Type: application/problem+json\n\n{ \"type\": \"https://example.test/problems/book-not-found\", \"title\": \"Book not found\", \"status\": 404 }", "paths./books/{bookId}.get.responses.404", "Return a safe documented error.", "Treat absence as an expected branch."],
+              failure: ["GET /books/bk_123\nAccept: application/json", "500 · Server failure", "HTTP/1.1 500 Internal Server Error\nContent-Type: application/problem+json\n\n{ \"type\": \"https://example.test/problems/internal\", \"title\": \"Unexpected failure\", \"status\": 500 }", "paths./books/{bookId}.get.responses.500", "Sanitize the response; log details privately.", "Fallback; retry only under a safe policy."]
+            }
+          },
+          {
+            nav: "Many endpoints · one server",
+            kicker: "Stage 2 · reuse inside one server",
+            title: "Extract shared models when routes repeat",
+            summary: "Catalog adds list and create routes. The file stays beside the same server, but Book, CreateBook, Problem, and reusable responses move into components.",
+            pressure: "Pressure: three operations repeat the same Book and Problem shapes.",
+            source: "services/catalog/openapi.yaml",
+            owner: "Catalog team",
+            usedBy: "Catalog SDK, docs, mocks, validators, server tests",
+            contractFlow: [
+              ["Catalog developer", "edits paths + components", ""],
+              ["catalog/openapi.yaml", "one service contract", "contract"],
+              ["SDK · docs · tests", "reuse components", ""]
+            ],
+            runtimeFlow: [
+              ["Client", "GET / POST books", ""],
+              ["Catalog server", "owns all routes", "runtime"],
+              ["2xx · 4xx · 5xx", "typed outcomes", ""]
+            ],
+            files: [{
+              path: "services/catalog/openapi.yaml",
+              owner: "Catalog team · source",
+              highlight: [6, 10, 14, 21, 27, 34],
+              code: `openapi: 3.1.0
+info: { title: Catalog API, version: 1.1.0 }
+paths:
+  /books:
+    get:
+      operationId: listBooks
+      responses:
+        '200': { $ref: '#/components/responses/BookListOk' }
+        '500': { $ref: '#/components/responses/ServerFailure' }
+    post:
+      operationId: createBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateBook' }
+      responses:
+        '201': { $ref: '#/components/responses/BookCreated' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '500': { $ref: '#/components/responses/ServerFailure' }
+  /books/{bookId}:
+    get:
+      operationId: getBook
+      responses:
+        '200': { $ref: '#/components/responses/BookOk' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerFailure' }
+components:
+  schemas:
+    CreateBook:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+    Book:
+      type: object
+      required: [id, title]
+      properties:
+        id: { type: string }
+        title: { type: string }
+    BookList:
+      type: array
+      items: { $ref: '#/components/schemas/Book' }
+    Problem:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+  responses:
+    BookListOk:
+      description: Books found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/BookList' }
+    BookOk:
+      description: Book found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Book' }
+    BookCreated:
+      description: Book created
+      headers:
+        Location: { schema: { type: string, format: uri-reference } }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Book' }
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Resource not found
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    ServerFailure:
+      description: Unexpected server failure
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }`
+            }],
+            changes: [
+              "<code>components.schemas</code> gives repeated shapes local names.",
+              "A local <code>$ref: '#/...'</code> reuses them inside this description.",
+              "CreateBook differs from Book because clients do not send server-generated <code>id</code>."
+            ],
+            rule: "Reuse when semantics match, not merely when two JSON objects look similar today.",
+            outcomes: {
+              success: ["POST /books\nContent-Type: application/json\n\n{ \"title\": \"The Dispossessed\" }", "201 · Shared Book response", "HTTP/1.1 201 Created\nLocation: /books/bk_124\n\n{ \"id\": \"bk_124\", \"title\": \"The Dispossessed\" }", "201 → responses.BookCreated → schemas.Book", "Accept CreateBook and return Book.", "Read id and Location."],
+              error: ["POST /books\nContent-Type: application/json\n\n{}", "400 · Shared Problem envelope", "HTTP/1.1 400 Bad Request\nContent-Type: application/problem+json\n\n{ \"type\": \"https://example.test/problems/validation\", \"title\": \"Invalid request\", \"status\": 400 }", "400 → responses.BadRequest → schemas.Problem", "Use the envelope with operation-specific details.", "Handle Problem, then branch on type."],
+              failure: ["POST /books\nContent-Type: application/json\n\n{ \"title\": \"The Dispossessed\" }", "500 · Same shape, different meaning", "HTTP/1.1 500 Internal Server Error\nContent-Type: application/problem+json\n\n{ \"type\": \"https://example.test/problems/internal\", \"title\": \"Unexpected failure\", \"status\": 500 }", "500 → responses.ServerFailure → schemas.Problem", "Keep the common shape without equating 4xx and 5xx.", "Use a failure-specific recovery path."]
+            }
+          },
+          {
+            nav: "Many endpoints · many servers",
+            kicker: "Stage 3 · cross deployment boundaries",
+            title: "Keep paths local; publish shared models",
+            summary: "Reviews becomes a separate server. Each team owns its OpenAPI file. A small common schema package is published once, pinned by version, and referenced externally.",
+            pressure: "Pressure: separate teams need common wire semantics without lockstep releases.",
+            source: "Per-service specs + common-contracts@2.3.0",
+            owner: "Service teams own paths; platform owns shared package and registry",
+            usedBy: "Service builds, central bundler, gateway, docs, SDKs, tests",
+            contractFlow: [
+              ["Service teams", "publish owned specs", ""],
+              ["Registry + CI", "validate + version", "central"],
+              ["Bundles · SDKs · docs", "consume releases", "contract"]
+            ],
+            runtimeFlow: [
+              ["Client", "calls public URL", ""],
+              ["Gateway", "routes operation", "runtime"],
+              ["Catalog or Reviews", "separate servers", "runtime"]
+            ],
+            files: [
+              {
+                path: "contracts/common/2.3.0/common.yaml",
+                owner: "Platform · immutable release",
+                highlight: [1, 3, 4, 12],
+                code: `$id: https://contracts.example.test/common/2.3.0/common.yaml
+$schema: https://json-schema.org/draft/2020-12/schema
+$defs:
+  Problem:
+    type: object
+    required: [type, title, status]
+    properties:
+      type: { type: string, format: uri }
+      title: { type: string }
+      status: { type: integer }
+      traceId: { type: string }
+  BookSummary:
+    type: object
+    required: [id, title]
+    properties:
+      id: { type: string }
+      title: { type: string }`
+              },
+              {
+                path: "services/catalog/openapi.yaml",
+                owner: "Catalog team · source",
+                highlight: [6, 14, 21],
+                code: `openapi: 3.1.0
+info: { title: Catalog API, version: 2.0.0 }
+paths:
+  /books/{bookId}:
+    get:
+      operationId: getBook
+      responses:
+        '200':
+          description: Book found
+          content:
+            application/json:
+              schema:
+                $ref: 'https://contracts.example.test/common/2.3.0/common.yaml#/$defs/BookSummary'
+        '404':
+          description: Book not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://contracts.example.test/common/2.3.0/common.yaml#/$defs/Problem'`
+              },
+              {
+                path: "services/reviews/openapi.yaml",
+                owner: "Reviews team · source",
+                highlight: [4, 12, 19, 27],
+                code: `openapi: 3.1.0
+info: { title: Reviews API, version: 1.0.0 }
+paths:
+  /books/{bookId}/reviews:
+    get:
+      operationId: listBookReviews
+      responses:
+        '200':
+          description: A page of reviews
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ReviewPage' }
+        '404':
+          description: Book is unknown
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://contracts.example.test/common/2.3.0/common.yaml#/$defs/Problem'
+        '503':
+          description: Review store unavailable
+          headers:
+            Retry-After: { schema: { type: integer } }
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://contracts.example.test/common/2.3.0/common.yaml#/$defs/Problem'
+components:
+  schemas:
+    ReviewPage:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Review' }
+        nextCursor: { type: [string, 'null'] }
+    Review:
+      type: object
+      required: [rating, excerpt]
+      properties:
+        rating: { type: integer, minimum: 1, maximum: 5 }
+        excerpt: { type: string }`
+              },
+              {
+                path: "registry/bookstore-public/2026-07-30.yaml",
+                owner: "CI · generated bundle",
+                highlight: [1, 2, 4],
+                code: `# Generated bundle — do not edit
+x-bundle-version: 2026-07-30
+x-inputs:
+  catalog: catalog-api@2.0.0
+  reviews: reviews-api@1.0.0
+  common: common-contracts@2.3.0
+
+# Resolved paths and components follow.
+# One-file consumers read this artifact.`
+              }
+            ],
+            changes: [
+              "Each service owns its <code>paths</code> and release cadence.",
+              "External <code>$ref</code>s pin an immutable shared-model version.",
+              "The central bundle is generated for consumers, never hand-edited."
+            ],
+            rule: "Share contract artifacts, not in-memory classes or database models. Pin immutable versions.",
+            outcomes: {
+              success: ["GET /books/bk_123/reviews?limit=2\nAccept: application/json", "200 · Service-owned ReviewPage", "HTTP/1.1 200 OK\n\n{ \"items\": [{ \"rating\": 5, \"excerpt\": \"Excellent.\" }], \"nextCursor\": null }", "Reviews 200 → local ReviewPage", "Reviews owns ReviewPage semantics.", "Use Reviews operation from the bundle."],
+              error: ["GET /books/bk_missing/reviews\nAccept: application/json", "404 · Shared cross-service shape", "HTTP/1.1 404 Not Found\nContent-Type: application/problem+json\n\n{ \"type\": \"https://example.test/problems/book-not-found\", \"title\": \"Book not found\", \"status\": 404, \"traceId\": \"tr_72\" }", "Reviews 404 → common-contracts@2.3.0#Problem", "Own error type; reuse envelope.", "Reuse generic Problem handling."],
+              failure: ["GET /books/bk_123/reviews\nAccept: application/json", "503 · Shared failure shape", "HTTP/1.1 503 Service Unavailable\nRetry-After: 30\nContent-Type: application/problem+json\n\n{ \"type\": \"https://example.test/problems/reviews-unavailable\", \"title\": \"Reviews unavailable\", \"status\": 503 }", "Reviews 503 → common-contracts@2.3.0#Problem", "Return meaningful Retry-After.", "Retry boundedly; Catalog is still available."]
+            }
+          },
+          {
+            nav: "Central use across the org",
+            kicker: "Stage 4 · central distribution",
+            title: "Make the registry the contract hub",
+            summary: "Source files remain team-owned. Central CI validates, diffs, resolves pinned references, publishes immutable bundles, then fans them out to docs, SDK, gateway, mock, and test systems.",
+            pressure: "Pressure: many teams and tools need one trustworthy discovery point.",
+            source: "Service repos feed an immutable registry manifest",
+            owner: "Services own operations; platform owns publication; shared schemas have named owners",
+            usedBy: "Portal, SDK generators, gateways, mocks, test suites, clients",
+            contractFlow: [
+              ["Owned source specs", "Catalog · Reviews · Common", ""],
+              ["Contract pipeline", "lint · diff · bundle", "central"],
+              ["Every consumer", "portal · SDK · gateway · tests", "contract"]
+            ],
+            runtimeFlow: [
+              ["Client or SDK", "uses published operation", ""],
+              ["Gateway", "routes + policy", "runtime"],
+              ["Owning service", "returns response", "runtime"]
+            ],
+            files: [
+              {
+                path: "registry/bookstore/manifest.yaml",
+                owner: "CI · immutable manifest",
+                highlight: [1, 4, 9, 14, 19],
+                code: `api: bookstore-public
+release: 2026-07-30
+status: published
+inputs:
+  - name: catalog
+    version: 2.0.0
+    digest: sha256:<illustrative-catalog-digest>
+  - name: reviews
+    version: 1.0.0
+    digest: sha256:<illustrative-reviews-digest>
+  - name: common-contracts
+    version: 2.3.0
+    digest: sha256:<illustrative-common-digest>
+outputs:
+  bundled: bookstore-public-2026-07-30.yaml
+  dereferenced: bookstore-public-2026-07-30.deref.yaml
+checks:
+  structural-validation: passed
+  reference-resolution: passed
+  breaking-change-policy: passed
+  provider-contract-tests: passed`
+              },
+              {
+                path: "pipeline/contract-release.yml",
+                owner: "Platform · automation",
+                highlight: [3, 4, 5, 8],
+                code: `contract-release:
+  steps:
+    - lint-openapi
+    - resolve-pinned-refs
+    - compare-with-previous-release
+    - run-provider-contract-tests
+    - bundle-and-sign
+    - publish-to-api-registry
+    - trigger-docs-and-sdk-builds
+    - update-gateway-after-approval`
+              },
+              {
+                path: "registry/bookstore-public-2026-07-30.yaml",
+                owner: "CI · consumer artifact",
+                highlight: [1, 2, 7, 13],
+                code: `# Abridged generated consumer-facing bundle
+openapi: 3.1.0
+info:
+  title: Bookstore Public API
+  version: 2026-07-30
+servers:
+  - url: https://api.example.test
+paths:
+  /books: {}
+  /books/{bookId}: {}
+  /books/{bookId}/reviews: {}
+components:
+  schemas: {}`
+              }
+            ],
+            changes: [
+              "The manifest records exact versions and digests for reproducibility.",
+              "Compatibility checks compare proposed and published contracts.",
+              "Tools read published outputs instead of cloning every source repository."
+            ],
+            rule: "The registry proves what was published, not that production still conforms. Keep runtime contract tests.",
+            outcomes: {
+              success: ["GET /books/bk_123\nUser-Agent: bookstore-sdk/2026-07-30", "200 · SDK follows published bundle", "HTTP/1.1 200 OK\n\n{ \"id\": \"bk_123\", \"title\": \"A Wizard of Earthsea\" }", "Bundle → Catalog operation → BookSummary", "Conform to the published release.", "Record the SDK/contract version."],
+              error: ["POST /books\nContent-Type: application/json\n\n{}", "400 · Docs, SDK, and tests agree", "HTTP/1.1 400 Bad Request\nContent-Type: application/problem+json\n\n{ \"type\": \"https://example.test/problems/validation\", \"title\": \"Invalid request\", \"status\": 400 }", "Bundle → BadRequest → Problem@2.3.0", "Return what provider tests exercise.", "Handle the same typed error shown in docs."],
+              failure: ["GET /books/bk_123/reviews\nAccept: application/json", "503 · Central visibility, local recovery", "HTTP/1.1 503 Service Unavailable\nRetry-After: 30\n\n{ \"type\": \"https://example.test/problems/reviews-unavailable\", \"title\": \"Reviews unavailable\", \"status\": 503 }", "Bundle → Reviews 503 → Problem@2.3.0", "Reviews still owns recovery.", "Continue using unrelated Catalog operations."]
+            }
+          }
+        ];
+
+        const state = { stage: 0, file: 0, outcome: "success" };
+        const $ = (s) => document.querySelector(s);
+        const $$ = (s) => [...document.querySelectorAll(s)];
+
+        function renderNav() {
+          const nav = $("#stage-nav");
+          nav.replaceChildren();
+          stages.forEach((stage, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "stage-button";
+            button.role = "tab";
+            button.setAttribute("aria-selected", String(index === state.stage));
+            button.innerHTML = `<span class="stage-number">${index + 1}</span><span class="stage-label">${stage.nav}</span>`;
+            button.addEventListener("click", () => {
+              state.stage = index;
+              state.file = 0;
+              state.outcome = "success";
+              render();
+              $(".workspace").scrollIntoView({ block: "start" });
+            });
+            nav.append(button);
+          });
+        }
+
+        function renderFlow(selector, items) {
+          const track = $(selector);
+          track.replaceChildren();
+          items.forEach(([name, detail, kind], index) => {
+            if (index) {
+              const arrow = document.createElement("span");
+              arrow.className = "flow-arrow";
+              const runtime = selector === "#runtime-flow";
+              arrow.textContent = runtime
+                ? (index === 1 ? "request" : "response")
+                : (index === 1 ? "publishes to" : "fans out to");
+              track.append(arrow);
+            }
+            const node = document.createElement("article");
+            node.className = `flow-node ${kind}`.trim();
+            const title = document.createElement("strong");
+            title.textContent = name;
+            const copy = document.createElement("small");
+            copy.textContent = detail;
+            node.append(title, copy);
+            track.append(node);
+          });
+        }
+
+        function renderCode(file) {
+          $("#current-file").textContent = file.path;
+          const code = $("#code-lines");
+          code.replaceChildren();
+          const highlighted = new Set(file.highlight);
+          file.code.split("\n").forEach((line, i) => {
+            const row = document.createElement("span");
+            row.className = `code-line ${highlighted.has(i + 1) ? "new" : ""}`.trim();
+            const number = document.createElement("span");
+            number.className = "line-no";
+            number.textContent = i + 1;
+            const text = document.createElement("span");
+            text.className = "line-text";
+            text.textContent = line || " ";
+            row.append(number, text);
+            code.append(row);
+          });
+        }
+
+        function renderFiles(stage) {
+          const tree = $("#file-tree");
+          tree.replaceChildren();
+          stage.files.forEach((file, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.role = "tab";
+            button.className = "file-button";
+            button.setAttribute("aria-selected", String(index === state.file));
+            const path = document.createElement("span");
+            path.className = "file-path";
+            path.textContent = file.path;
+            const owner = document.createElement("span");
+            owner.className = "file-owner";
+            owner.textContent = file.owner;
+            button.append(path, owner);
+            button.addEventListener("click", () => {
+              state.file = index;
+              renderFiles(stage);
+            });
+            tree.append(button);
+          });
+          renderCode(stage.files[state.file]);
+        }
+
+        function renderOutcome(stage) {
+          $$(".outcome").forEach((button) =>
+            button.setAttribute("aria-selected", String(button.dataset.outcome === state.outcome))
+          );
+          const [request, title, response, pointer, server, client] = stage.outcomes[state.outcome];
+          $("#request").textContent = request;
+          $("#response-title").textContent = title;
+          $("#response").textContent = response;
+          $("#pointer").textContent = pointer;
+          $("#server").textContent = server;
+          $("#client").textContent = client;
+        }
+
+        function render() {
+          const stage = stages[state.stage];
+          renderNav();
+          $("#kicker").textContent = stage.kicker;
+          $("#title").textContent = stage.title;
+          $("#summary").textContent = stage.summary;
+          $("#pressure").textContent = stage.pressure;
+          $("#source").textContent = stage.source;
+          $("#owner").textContent = stage.owner;
+          $("#used-by").textContent = stage.usedBy;
+          $("#rule").textContent = stage.rule;
+          renderFlow("#contract-flow", stage.contractFlow);
+          renderFlow("#runtime-flow", stage.runtimeFlow);
+          renderFiles(stage);
+          const changes = $("#change-list");
+          changes.replaceChildren();
+          stage.changes.forEach((html) => {
+            const li = document.createElement("li");
+            li.innerHTML = html;
+            changes.append(li);
+          });
+          renderOutcome(stage);
+        }
+
+        $$(".outcome").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.outcome = button.dataset.outcome;
+            renderOutcome(stages[state.stage]);
+          });
+        });
+
+        $("#copy").addEventListener("click", async () => {
+          const button = $("#copy");
+          try {
+            await navigator.clipboard.writeText(stages[state.stage].files[state.file].code);
+            button.textContent = "Copied";
+          } catch {
+            button.textContent = "Copy unavailable";
+          }
+          setTimeout(() => { button.textContent = "Copy file"; }, 1400);
+        });
+
+        render();
+      })();
+    </script>
+  </body>
+</html>
